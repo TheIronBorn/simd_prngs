@@ -82,7 +82,7 @@ macro_rules! make_xorshift128 {
                 let mut seeds = [$vector::default(); 4];
                 while seeds
                     .iter()
-                    .// `splat(true)`
+                    // `splat(true)`
                     .fold(ZERO.eq(ZERO), |acc, s| acc & s.eq(&ZERO))
                     .any()
                 {
