@@ -1,0 +1,7 @@
+[package]
+name = "simd_prngs"
+version = "0.1.0"
+authors = ["TheIronBorn <>"]
+
+[dependencies]
+rand = "0.5"
