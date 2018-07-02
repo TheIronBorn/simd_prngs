@@ -110,3 +110,5 @@ generate! { xsm32_x2, Xsm32x2, u32x2 }
 generate! { xsm32_x4, Xsm32x4, u32x4 }
 generate! { xsm32_x8, Xsm32x8, u32x8 }
 generate! { xsm32_x16, Xsm32x16, u32x16 }
+
+generate! { intel_lcg, IntelLcg, u32x4 }

@@ -39,3 +39,6 @@ pub use self::mwc::*;
 
 mod xsm;
 pub use self::xsm::*;
+
+mod intel_lcg;
+pub use self::intel_lcg::*;

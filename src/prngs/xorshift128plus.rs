@@ -14,6 +14,9 @@ macro_rules! make_xorshift128plus {
             pub fn generate(&mut self) -> $vector {
                 let mut s1 = self.s0;
                 let s0 = self.s1;
+                // replacing this scrambler with one from the "Scrambled Linear
+                // Pseudorandom Number Generators" paper might provide a
+                // sufficient balance of speed/quality
                 let result = s0 + s1;
                 self.s0 = s0;
                 s1 ^= s1 << 23; // a
