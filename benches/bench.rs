@@ -81,6 +81,10 @@ generate! { xoshiro256starstar_x2, Xoshiro256StarStarX2, u64x2 }
 generate! { xoshiro256starstar_x4, Xoshiro256StarStarX4, u64x4 }
 generate! { xoshiro256starstar_x8, Xoshiro256StarStarX8, u64x8 }
 
+generate! { lcg32x2, Lcg32x2, u32x2 }
+generate! { lcg32x4, Lcg32x4, u32x4 }
+generate! { lcg32x8, Lcg32x8, u32x8 }
+
 generate! { pcg32x2, Pcg32x2, u32x2 }
 generate! { pcg32x4, Pcg32x4, u32x4 }
 generate! { pcg32x8, Pcg32x8, u32x8 }

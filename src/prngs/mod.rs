@@ -25,6 +25,9 @@ pub use self::xoroshiro::*;
 mod xoshiro;
 pub use self::xoshiro::*;
 
+mod lcg;
+pub use self::lcg::*;
+
 mod pcg;
 pub use self::pcg::*;
 
