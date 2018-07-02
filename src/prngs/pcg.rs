@@ -18,6 +18,10 @@ macro_rules! make_pcg {
                 // Calculate output function (XSH RR), uses old state for max ILP
                 let xorshifted = $vec32::from(((oldstate >> 18) ^ oldstate) >> 27);
                 let rot = $vec32::from(oldstate >> 59);
+
+                // This rotate could be replaced by a similarly functioning
+                // vector shuffle on older hardware (24 possible shuffles,
+                // 6 with "rotate one bit right" behavior)
                 // xorshifted.rotate_right(rot)
                 (xorshifted >> rot) | (xorshifted << (32 - (rot % 32)))
             }
