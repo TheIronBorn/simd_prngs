@@ -84,7 +84,7 @@ macro_rules! make_xorshift128 {
                     .iter()
                     // `splat(true)`
                     .fold(ZERO.eq(ZERO), |acc, s| acc & s.eq(&ZERO))
-                    .any()
+                    .any() // any lane has all zero seeds
                 {
                     rng.try_fill(seeds.as_byte_slice_mut())?;
                 }

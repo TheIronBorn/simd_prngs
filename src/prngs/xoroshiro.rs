@@ -14,8 +14,9 @@ macro_rules! make_xoroshiro {
             pub fn generate(&mut self) -> $vector {
                 let s0 = self.s0;
                 let mut s1 = self.s1;
-                // The `++` scrambler might be faster. The paper suggests this
-                // rotate could be replaced by `x ^= x >> 7`.
+                // The `++` scrambler might be faster (multiplication,
+                // particularly 64-bit, is slow with SIMD). The paper suggests
+                // this rotate could be replaced by `x ^= x >> 7`.
                 let result = (s0 * 5).rotate_left(7) * 9;
 
                 s1 ^= s0;
