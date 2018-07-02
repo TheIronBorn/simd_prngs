@@ -31,6 +31,9 @@ pub use self::lcg::*;
 mod pcg;
 pub use self::pcg::*;
 
+mod pcg_fixed;
+pub use self::pcg_fixed::*;
+
 mod lfsr;
 pub use self::lfsr::*;
 

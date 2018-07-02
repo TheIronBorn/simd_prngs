@@ -89,6 +89,14 @@ generate! { pcg32x2, Pcg32x2, u32x2 }
 generate! { pcg32x4, Pcg32x4, u32x4 }
 generate! { pcg32x8, Pcg32x8, u32x8 }
 
+generate! { pcg_fixed_xsh32x2, PcgFixedXsh32x2, u32x2 }
+generate! { pcg_fixed_xsh32x4, PcgFixedXsh32x4, u32x4 }
+generate! { pcg_fixed_xsh32x8, PcgFixedXsh32x8, u32x8 }
+
+generate! { pcg_fixed_xsl32x2, PcgFixedXsl32x2, u32x2 }
+generate! { pcg_fixed_xsl32x4, PcgFixedXsl32x4, u32x4 }
+generate! { pcg_fixed_xsl32x8, PcgFixedXsl32x8, u32x8 }
+
 generate! { lfsr113_x2, Lfsr113x2, u32x2 }
 generate! { lfsr113_x4, Lfsr113x4, u32x4 }
 generate! { lfsr113_x8, Lfsr113x8, u32x8 }
