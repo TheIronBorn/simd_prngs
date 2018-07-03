@@ -8,7 +8,7 @@ use std::simd::*;
 
 use rng_impl::*;
 
-/// Probability of correlation: 8^2 * l / 5e18 = l * 1.28e-17
+/// Probability of correlation: 8^2 * l / 5e18 ≈ l * 1.28e-17
 /// Using the smallest cycle-length of the different parameters
 /// (Not considering the effect of different parameters)
 pub struct Mwc8 {
@@ -70,7 +70,7 @@ impl SeedableRng for Mwc8 {
     }
 }
 
-/// Probability of correlation: 2^2 * l / 5e18 = l * 8e-19
+/// Probability of correlation: 2^2 * l / 5e18 ≈ l * 8e-19
 /// Using the smallest cycle-length of the different parameters
 /// (Not considering the effect of different parameters)
 pub struct Mwc2 {
@@ -119,7 +119,7 @@ impl SeedableRng for Mwc2 {
     }
 }
 
-/// Probability of correlation: 4^2 * l / 5e18 = l * 3.2e-18
+/// Probability of correlation: 4^2 * l / 5e18 ≈ l * 3.2e-18
 /// Using the smallest cycle-length of the different parameters
 /// (Not considering the effect of different parameters)
 pub struct Mwc4 {

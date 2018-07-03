@@ -59,6 +59,6 @@ macro_rules! make_xorshift128plus {
 // (multiple parameters could be used, though slow on older hardware)
 // (jumping is possible)
 // Listing probability of overlap somewhere:                            Probability
-make_xorshift128plus! { Xorshift128PlusX2, u64x2 } // 2^2 * l / 2^128 = l * 2^-126
-make_xorshift128plus! { Xorshift128PlusX4, u64x4 } // 4^2 * l / 2^128 = l * 2^-124
-make_xorshift128plus! { Xorshift128PlusX8, u64x8 } // 8^2 * l / 2^128 = l * 2^-122
+make_xorshift128plus! { Xorshift128PlusX2, u64x2 } // 2^2 * l / 2^128 ≈ l * 2^-126
+make_xorshift128plus! { Xorshift128PlusX4, u64x4 } // 4^2 * l / 2^128 ≈ l * 2^-124
+make_xorshift128plus! { Xorshift128PlusX8, u64x8 } // 8^2 * l / 2^128 ≈ l * 2^-122

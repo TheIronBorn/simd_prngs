@@ -73,10 +73,10 @@ macro_rules! make_lfsr113 {
 // (multiple parameters could be used, though slow on older hardware)
 // (jumping is possible)
 // Listing probability of overlap somewhere:               Probability
-make_lfsr113! { Lfsr113x2, u32x2 } // 2^2 * l / 2^113 =    l * 2^-111
-make_lfsr113! { Lfsr113x4, u32x4 } // 4^2 * l / 2^113 =    l * 2^-109
-make_lfsr113! { Lfsr113x8, u32x8 } // 8^2 * l / 2^113 =    l * 2^-107
-make_lfsr113! { Lfsr113x16, u32x16 } // 16^2 * l / 2^113 = l * 2^-105
+make_lfsr113! { Lfsr113x2, u32x2 } // 2^2 * l / 2^113 ≈    l * 2^-111
+make_lfsr113! { Lfsr113x4, u32x4 } // 4^2 * l / 2^113 ≈    l * 2^-109
+make_lfsr113! { Lfsr113x8, u32x8 } // 8^2 * l / 2^113 ≈    l * 2^-107
+make_lfsr113! { Lfsr113x16, u32x16 } // 16^2 * l / 2^113 ≈ l * 2^-105
 
 macro_rules! make_lfsr258 {
     ($rng_name:ident, $vector:ident) => {
@@ -152,6 +152,6 @@ macro_rules! make_lfsr258 {
 // (multiple parameters could be used, though slow on older hardware)
 // (jumping is possible)
 // Listing probability of overlap somewhere:            Probability
-make_lfsr258! { Lfsr258x2, u64x2 } // 2^2 * l / 2^258 = l * 2^-256
-make_lfsr258! { Lfsr258x4, u64x4 } // 4^2 * l / 2^258 = l * 2^-254
-make_lfsr258! { Lfsr258x8, u64x8 } // 8^2 * l / 2^258 = l * 2^-252
+make_lfsr258! { Lfsr258x2, u64x2 } // 2^2 * l / 2^258 ≈ l * 2^-256
+make_lfsr258! { Lfsr258x4, u64x4 } // 4^2 * l / 2^258 ≈ l * 2^-254
+make_lfsr258! { Lfsr258x8, u64x8 } // 8^2 * l / 2^258 ≈ l * 2^-252

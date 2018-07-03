@@ -78,17 +78,17 @@ macro_rules! make_sfc_simd {
 // (some counter-based techniques could be adapted)
 // Listing probability of overlap somewhere:                     Probability
 
-make_sfc_simd! { 64bit: Sfc64x2, u64x2 } // 2^2 * l / 2^255 =    l * 2^-253
-make_sfc_simd! { 64bit: Sfc64x4, u64x4 } // 4^2 * l / 2^255 =    l * 2^-251
-make_sfc_simd! { 64bit: Sfc64x8, u64x8 } // 8^2 * l / 2^255 =    l * 2^-249
+make_sfc_simd! { 64bit: Sfc64x2, u64x2 } // 2^2 * l / 2^255 ≈    l * 2^-253
+make_sfc_simd! { 64bit: Sfc64x4, u64x4 } // 4^2 * l / 2^255 ≈    l * 2^-251
+make_sfc_simd! { 64bit: Sfc64x8, u64x8 } // 8^2 * l / 2^255 ≈    l * 2^-249
 
-make_sfc_simd! { 32bit: Sfc32x2, u32x2 } // 2^2 * l / 2^128 =    l * 2^-126
-make_sfc_simd! { 32bit: Sfc32x4, u32x4 } // 4^2 * l / 2^128 =    l * 2^-124
-make_sfc_simd! { 32bit: Sfc32x8, u32x8 } // 8^2 * l / 2^128 =    l * 2^-122
-make_sfc_simd! { 32bit: Sfc32x16, u32x16 } // 16^2 * l / 2^128 = l * 2^-120
+make_sfc_simd! { 32bit: Sfc32x2, u32x2 } // 2^2 * l / 2^128 ≈    l * 2^-126
+make_sfc_simd! { 32bit: Sfc32x4, u32x4 } // 4^2 * l / 2^128 ≈    l * 2^-124
+make_sfc_simd! { 32bit: Sfc32x8, u32x8 } // 8^2 * l / 2^128 ≈    l * 2^-122
+make_sfc_simd! { 32bit: Sfc32x16, u32x16 } // 16^2 * l / 2^128 ≈ l * 2^-120
 
-make_sfc_simd! { 16bit: Sfc16x2, u16x2 } // 2^2 * l / 2^63 =     l * 2^-61
-make_sfc_simd! { 16bit: Sfc16x4, u16x4 } // 4^2 * l / 2^63 =     l * 2^-59
-make_sfc_simd! { 16bit: Sfc16x8, u16x8 } // 8^2 * l / 2^63 =     l * 2^-57
-make_sfc_simd! { 16bit: Sfc16x16, u16x16 } // 16^2 * l / 2^63 =  l * 2^-55
-make_sfc_simd! { 16bit: Sfc16x32, u16x32 } // 32^2 * l / 2^63 =  l * 2^-52
+make_sfc_simd! { 16bit: Sfc16x2, u16x2 } // 2^2 * l / 2^63 ≈     l * 2^-61
+make_sfc_simd! { 16bit: Sfc16x4, u16x4 } // 4^2 * l / 2^63 ≈     l * 2^-59
+make_sfc_simd! { 16bit: Sfc16x8, u16x8 } // 8^2 * l / 2^63 ≈     l * 2^-57
+make_sfc_simd! { 16bit: Sfc16x16, u16x16 } // 16^2 * l / 2^63 ≈  l * 2^-55
+make_sfc_simd! { 16bit: Sfc16x32, u16x32 } // 32^2 * l / 2^63 ≈  l * 2^-52

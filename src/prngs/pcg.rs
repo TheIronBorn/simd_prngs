@@ -57,6 +57,6 @@ macro_rules! make_pcg {
 // (multiple parameters could be used)
 // (stream selection is possible)
 // Listing probability of overlap somewhere:            Probability
-make_pcg! { Pcg32x2, u64x2, u32x2 } // 2^2 * l / 2^64 = l * 2^-62
-make_pcg! { Pcg32x4, u64x4, u32x4 } // 4^2 * l / 2^64 = l * 2^-60
-make_pcg! { Pcg32x8, u64x8, u32x8 } // 8^2 * l / 2^64 = l * 2^-58
+make_pcg! { Pcg32x2, u64x2, u32x2 } // 2^2 * l / 2^64 ≈ l * 2^-62
+make_pcg! { Pcg32x4, u64x4, u32x4 } // 4^2 * l / 2^64 ≈ l * 2^-60
+make_pcg! { Pcg32x8, u64x8, u32x8 } // 8^2 * l / 2^64 ≈ l * 2^-58
