@@ -14,6 +14,7 @@ macro_rules! make_pcg {
             pub fn generate(&mut self) -> $vec32 {
                 let oldstate = self.state;
                 // Advance internal state
+                // We could easily use different parameters per stream here
                 self.state = oldstate * 6364136223846793005 + self.inc;
                 // Calculate output function (XSH RR), uses old state for max ILP
                 let xorshifted = $vec32::from(((oldstate >> 18) ^ oldstate) >> 27);
@@ -52,6 +53,10 @@ macro_rules! make_pcg {
     };
 }
 
-make_pcg! { Pcg32x2, u64x2, u32x2 }
-make_pcg! { Pcg32x4, u64x4, u32x4 }
-make_pcg! { Pcg32x8, u64x8, u32x8 }
+// (where `l` is stream length)
+// (multiple parameters could be used)
+// (stream selection is possible)
+// Listing probability of overlap somewhere:            Probability
+make_pcg! { Pcg32x2, u64x2, u32x2 } // 2^2 * l / 2^64 = l * 2^-62
+make_pcg! { Pcg32x4, u64x4, u32x4 } // 4^2 * l / 2^64 = l * 2^-60
+make_pcg! { Pcg32x8, u64x8, u32x8 } // 8^2 * l / 2^64 = l * 2^-58

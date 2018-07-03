@@ -40,10 +40,14 @@ macro_rules! make_xorshift {
     };
 }
 
-make_xorshift! { Xorshift32x2, u32x2 }
-make_xorshift! { Xorshift32x4, u32x4 }
-make_xorshift! { Xorshift32x8, u32x8 }
-make_xorshift! { Xorshift32x16, u32x16 }
+// (where `l` is stream length)
+// (multiple parameters could be used, though slow on older hardware)
+// (jumping is possible)
+// Listing probability of overlap somewhere:                  Probability
+make_xorshift! { Xorshift32x2, u32x2 } // 2^2 * l / 2^32 =    l * 2^-30
+make_xorshift! { Xorshift32x4, u32x4 } // 4^2 * l / 2^32 =    l * 2^-28
+make_xorshift! { Xorshift32x8, u32x8 } // 8^2 * l / 2^32 =    l * 2^-26
+make_xorshift! { Xorshift32x16, u32x16 } // 16^2 * l / 2^32 = l * 2^-24
 
 macro_rules! make_xorshift128 {
     ($rng_name:ident, $vector:ident) => {
@@ -100,7 +104,11 @@ macro_rules! make_xorshift128 {
     };
 }
 
-make_xorshift128! { Xorshift128x2, u32x2 }
-make_xorshift128! { Xorshift128x4, u32x4 }
-make_xorshift128! { Xorshift128x8, u32x8 }
-make_xorshift128! { Xorshift128x16, u32x16 }
+// (where `l` is stream length)
+// (multiple parameters could be used, though slow on older hardware)
+// (jumping is possible)
+// Listing probability of overlap somewhere:                       Probability
+make_xorshift128! { Xorshift128x2, u32x2 } // 2^2 * l / 2^128 =    l * 2^-126
+make_xorshift128! { Xorshift128x4, u32x4 } // 4^2 * l / 2^128 =    l * 2^-124
+make_xorshift128! { Xorshift128x8, u32x8 } // 8^2 * l / 2^128 =    l * 2^-122
+make_xorshift128! { Xorshift128x16, u32x16 } // 16^2 * l / 2^128 = l * 2^-120

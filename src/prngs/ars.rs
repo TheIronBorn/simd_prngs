@@ -1,3 +1,7 @@
+// When only one 128-bit stream is used, there is no worry of correlation. If
+// multiple streams are used, it is trivial to avoid correlation by setting
+// the `input` counter appropriately
+
 use std::arch::x86_64::*;
 use std::simd::*;
 
@@ -26,7 +30,7 @@ const KEY_WEYL: u64x2 = u64x2::new(
     0x9e3779b97f4a7c15, // golden ratio
 );
 
-/// ARS from [Random123]
+/// ARS-5 from [Random123]
 ///
 /// [Random123]: http://www.deshawresearch.com/resources_random123.html
 pub struct Ars5 {
@@ -86,7 +90,7 @@ impl SeedableRng for Ars5 {
     }
 }
 
-/// ARS from [Random123]
+/// ARS-7 from [Random123]
 ///
 /// [Random123]: http://www.deshawresearch.com/resources_random123.html
 pub struct Ars7 {

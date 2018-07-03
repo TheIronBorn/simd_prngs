@@ -60,10 +60,14 @@ macro_rules! make_xsm32 {
     };
 }
 
-make_xsm32! { Xsm32x2, u32x2 }
-make_xsm32! { Xsm32x4, u32x4 }
-make_xsm32! { Xsm32x8, u32x8 }
-make_xsm32! { Xsm32x16, u32x16 }
+// (where `l` is stream length)
+// (multiple parameters *might* be possible)
+// (jumping is possible)
+// Listing probability of overlap somewhere:          Probability
+make_xsm32! { Xsm32x2, u32x2 } // 2^2 * l / 2^64 =    l * 2^-62
+make_xsm32! { Xsm32x4, u32x4 } // 4^2 * l / 2^64 =    l * 2^-60
+make_xsm32! { Xsm32x8, u32x8 } // 8^2 * l / 2^64 =    l * 2^-58
+make_xsm32! { Xsm32x16, u32x16 } // 16^2 * l / 2^64 = l * 2^-56
 
 macro_rules! make_xsm64 {
     ($rng_name:ident, $vec:ident, $vec64:ident) => {
@@ -121,6 +125,10 @@ macro_rules! make_xsm64 {
     };
 }
 
-make_xsm64! { Xsm64x2, u64x2, u64x2 }
-make_xsm64! { Xsm64x4, u64x4, u64x4 }
-make_xsm64! { Xsm64x8, u64x8, u64x8 }
+// (where `l` is stream length)
+// (multiple parameters *might* be possible)
+// (jumping is possible)
+// Listing probability of overlap somewhere:               Probability
+make_xsm64! { Xsm64x2, u64x2, u64x2 } // 2^2 * l / 2^128 = l * 2^-126
+make_xsm64! { Xsm64x4, u64x4, u64x4 } // 4^2 * l / 2^128 = l * 2^-124
+make_xsm64! { Xsm64x8, u64x8, u64x8 } // 8^2 * l / 2^128 = l * 2^-122

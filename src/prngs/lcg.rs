@@ -17,6 +17,7 @@ macro_rules! make_lcg {
             pub fn generate(&mut self) -> $vec32 {
                 let oldstate = self.state;
                 // Advance internal state
+                // We could easily use different parameters per stream here
                 self.state = oldstate * 6364136223846793005 + self.inc;
                 $vec32::from(oldstate)
             }
@@ -47,6 +48,9 @@ macro_rules! make_lcg {
     };
 }
 
-make_lcg! { Lcg32x2, u64x2, u32x2 }
-make_lcg! { Lcg32x4, u64x4, u32x4 }
-make_lcg! { Lcg32x8, u64x8, u32x8 }
+// (where `l` is stream length)
+// (multiple parameters could be used)
+// Listing probability of overlap somewhere:            Probability
+make_lcg! { Lcg32x2, u64x2, u32x2 } // 2^2 * l / 2^64 = l * 2^-62
+make_lcg! { Lcg32x4, u64x4, u32x4 } // 4^2 * l / 2^64 = l * 2^-60
+make_lcg! { Lcg32x8, u64x8, u32x8 } // 8^2 * l / 2^64 = l * 2^-58

@@ -5,6 +5,9 @@ use rng_impl::*;
 
 /// Intel's `rand_sse` SSSE2 LCG
 ///
+/// Period: 2^34
+/// Correlation: unknown
+///
 /// https://software.intel.com/en-us/articles/fast-random-number-generator-on-the-intel-pentiumr-4-processor/
 pub struct IntelLcg {
     cur_seed: u32x4,

@@ -1,8 +1,16 @@
+// These are implemented as iterating between parameters. Using all 8
+// parameter sets at once requires `pmuludq` instructions for the appropriate
+// vector widths. This implementation only needs SSE2. Larger would need AVX2
+// or AVX512.
+
 use std::arch::x86_64::*;
 use std::simd::*;
 
 use rng_impl::*;
 
+/// Probability of correlation: 8^2 * l / 5e18 = l * 1.28e-17
+/// Using the smallest cycle-length of the different parameters
+/// (Not considering the effect of different parameters)
 pub struct Mwc8 {
     buffer: [u64x2; 4],
     idx: u8,
@@ -62,6 +70,9 @@ impl SeedableRng for Mwc8 {
     }
 }
 
+/// Probability of correlation: 2^2 * l / 5e18 = l * 8e-19
+/// Using the smallest cycle-length of the different parameters
+/// (Not considering the effect of different parameters)
 pub struct Mwc2 {
     state: u64x2,
 }
@@ -108,6 +119,9 @@ impl SeedableRng for Mwc2 {
     }
 }
 
+/// Probability of correlation: 4^2 * l / 5e18 = l * 3.2e-18
+/// Using the smallest cycle-length of the different parameters
+/// (Not considering the effect of different parameters)
 pub struct Mwc4 {
     buffer: [u64x2; 2],
     idx: bool,

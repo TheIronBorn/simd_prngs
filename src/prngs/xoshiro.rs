@@ -65,6 +65,10 @@ macro_rules! make_xoshiro {
     };
 }
 
-make_xoshiro! { Xoshiro256StarStarX2, u64x2 }
-make_xoshiro! { Xoshiro256StarStarX4, u64x4 }
-make_xoshiro! { Xoshiro256StarStarX8, u64x8 }
+// (where `l` is stream length)
+// (multiple parameters could be used, though slow on older hardware)
+// (jumping is possible)
+// Listing probability of overlap somewhere:                       Probability
+make_xoshiro! { Xoshiro256StarStarX2, u64x2 } // 2^2 * l / 2^256 = l * 2^-254
+make_xoshiro! { Xoshiro256StarStarX4, u64x4 } // 4^2 * l / 2^256 = l * 2^-252
+make_xoshiro! { Xoshiro256StarStarX8, u64x8 } // 8^2 * l / 2^256 = l * 2^-250
