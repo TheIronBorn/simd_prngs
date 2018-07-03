@@ -23,7 +23,7 @@ macro_rules! make_pcg {
                 // vector shuffle on older hardware (24 possible shuffles,
                 // 6 with "rotate one bit right" behavior)
                 // xorshifted.rotate_right(rot)
-                (xorshifted >> rot) | (xorshifted << ((32 - rot) % 32))
+                (xorshifted >> rot) | (xorshifted << (32 - rot))
             }
         }
 
