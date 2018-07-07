@@ -13,6 +13,8 @@
 //! `$ cat_rng | RNG_test stdin -multithreaded`
 //! NOTE: `stdin32` seems to be fastest, I'm not sure what sort of effect it
 //! might have on test strength.
+//!
+//! `-tlmin 256GB` might also be useful
 
 #![feature(stdsimd)]
 
@@ -31,9 +33,9 @@ use simd_prngs::*;
 struct Aligned<T>(T);
 
 // Change these to test a different PRNG
-type Vector = u32x2;
-type SimdRng = Pcg32x2;
-type Vec8 = u8x8;
+type Vector = u8x16;
+type SimdRng = Jsf128;
+type Vec8 = u8x16;
 
 #[inline(always)]
 fn fill_bytes_via_simd(rng: &mut SimdRng, dest: &mut [u8]) {
@@ -52,7 +54,7 @@ fn fill_bytes_via_simd(rng: &mut SimdRng, dest: &mut [u8]) {
         // This could be `ptr::copy_nonoverlapping` which doubles
         // the speed (for non-SIMD contexts), but I'm not sure SIMD is happy
         // with it.
-        let mut results = Vec8::from_bits(rng.generate());
+        let results = Vec8::from_bits(rng.generate());
         // results = results.to_le();
         let len = dest.len() - remainder;
 

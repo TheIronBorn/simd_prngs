@@ -21,13 +21,13 @@ impl IntelLcg {
         const MASK: u32x4 = u32x4::new(0xFFFFFFFF, 0, 0xFFFFFFFF, 0);
 
         let shuffle = |x| unsafe { simd_shuffle4(x, x, [2, 3, 0, 1]) };
-        let mul = |x| u32x4::from_bits(unsafe { _mm_mul_epu32(__m128i::from_bits(x), __m128i::from_bits(MULT)) });
+        let mul = |x, mul| u32x4::from_bits(unsafe { _mm_mul_epu32(__m128i::from_bits(x), __m128i::from_bits(mul)) });
 
         let mut cur_seed_split = shuffle(self.cur_seed);
 
-        self.cur_seed = mul(self.cur_seed);
+        self.cur_seed = mul(self.cur_seed, MULT);
         let multiplier = shuffle(MULT);
-        cur_seed_split = mul(cur_seed_split);
+        cur_seed_split = mul(cur_seed_split, multiplier);
 
         self.cur_seed &= MASK;
         cur_seed_split &= MASK;
