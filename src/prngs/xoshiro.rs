@@ -37,7 +37,7 @@ macro_rules! make_xoshiro {
             }
 
             pub fn blocks_from_rng<R: RngCore>(mut rng: R) -> Result<Self, Error> {
-                pub struct Xoroshiro128 {
+                struct Xoroshiro128 {
                     s0: u64,
                     s1: u64,
                     s2: u64,
@@ -114,7 +114,7 @@ macro_rules! make_xoshiro {
                     s3 = s3.replace(i, scalar.s3);
                 }
 
-                Ok(Self { s0, s1, s, s3 })
+                Ok(Self { s0, s1, s2, s3 })
             }
         }
 

@@ -165,8 +165,6 @@ init! { init_rand_xoroshiro128starstar_x4, Xoroshiro128StarStarX4, from_rng }
 init! { init_rand_xoroshiro128starstar_x2, Xoroshiro128StarStarX2, from_rng }
 init! { init_rand_xoroshiro128starstar_x8, Xoroshiro128StarStarX8, from_rng }
 
-generate! { gen_xoroshiro128starstar, Xoroshiro128ss, u64 }
-
 bench! { gen_xoshiro256starstar_x2, float_xoshiro256starstar_x2, Xoshiro256StarStarX2, u64x2, f64x2 }
 bench! { gen_xoshiro256starstar_x4, float_xoshiro256starstar_x4, Xoshiro256StarStarX4, u64x4, f64x4 }
 bench! { gen_xoshiro256starstar_x8, float_xoshiro256starstar_x8, Xoshiro256StarStarX8, u64x8, f64x8 }
@@ -220,5 +218,14 @@ bench! { gen_xsm32_x2, float_xsm32_x2, Xsm32x2, u32x2, f32x2 }
 bench! { gen_xsm32_x4, float_xsm32_x4, Xsm32x4, u32x4, f32x4 }
 bench! { gen_xsm32_x8, float_xsm32_x8, Xsm32x8, u32x8, f32x8 }
 bench! { gen_xsm32_x16, float_xsm32_x16, Xsm32x16, u32x16, f32x16 }
+
+init! { init_block_xsm32_x2, Xsm32x2, blocks_from_rng }
+init! { init_rand_xsm32_x2, Xsm32x2, from_rng }
+init! { init_block_xsm32_x4, Xsm32x4, blocks_from_rng }
+init! { init_rand_xsm32_x4, Xsm32x4, from_rng }
+init! { init_block_xsm32_x8, Xsm32x8, blocks_from_rng }
+init! { init_rand_xsm32_x8, Xsm32x8, from_rng }
+init! { init_block_xsm32_x16, Xsm32x16, blocks_from_rng }
+init! { init_rand_xsm32_x16, Xsm32x16, from_rng }
 
 bench! { gen_intel_lcg, float_intel_lcg, IntelLcg, u32x4, f32x4 }

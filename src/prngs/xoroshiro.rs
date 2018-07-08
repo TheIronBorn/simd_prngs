@@ -32,7 +32,7 @@ macro_rules! make_xoroshiro {
             }
 
             pub fn blocks_from_rng<R: RngCore>(mut rng: R) -> Result<Self, Error> {
-                pub struct Xoroshiro128 {
+                struct Xoroshiro128 {
                     s0: u64,
                     s1: u64,
                 }

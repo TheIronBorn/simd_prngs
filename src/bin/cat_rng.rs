@@ -33,8 +33,8 @@ use simd_prngs::*;
 struct Aligned<T>(T);
 
 // Change these to test a different PRNG
-type Vector = u8x16;
-type SimdRng = Jsf128;
+type Vector = u32x4;
+type SimdRng = Jsf32x4;
 type Vec8 = u8x16;
 
 #[inline(always)]
