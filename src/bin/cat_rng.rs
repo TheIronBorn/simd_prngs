@@ -69,7 +69,7 @@ fn fill_bytes_via_simd(rng: &mut SimdRng, dest: &mut [u8]) {
 fn main() -> io::Result<()> {
     let mut rng = SimdRng::from_entropy();
 
-    let mut buf = Aligned([0u8; 32]);
+    let mut buf = Aligned([0u8; 64]);
     let stdout = io::stdout();
     let lock = stdout.lock();
     let mut writer = BufWriter::new(lock);
