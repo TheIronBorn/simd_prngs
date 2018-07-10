@@ -60,11 +60,8 @@ impl ChaCha4 {
 
         let result = core(self.state);
 
-        // update 64-bit counter, could probably be better
-        self.state.d += u32x4::new(1, 0, 0, 0);
-        // if d[0] == 0 { d[1] += 1; };
-        let cmp = self.state.d.eq(u32x4::splat(0)).extract(0);
-        self.state.d += cmp as u32 & u32x4::new(0, 1, 0, 0);
+        // update 64-bit counter
+        self.state.d = u32x4::from_bits(u64x2::from_bits(self.state.d) + u64x2::new(1, 0));
 
         // compiles to a few move/insert128 instructions
         let ab: u32x8 = unsafe { simd_shuffle8(result.a, result.b, [0, 1, 2, 3, 4, 5, 6, 7]) };
