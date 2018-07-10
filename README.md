@@ -23,6 +23,7 @@ Note: not all implementations of PRNGs are verified to be correct.
 - `Xoshiro256StarStar`: The Xoshiro256** PRNG
 - `Pcg32`: A PCG PRNG (XSH 64/32 RR (LCG) variant).
 - `Xsm32`, `Xsm64`: A small random-access PRNG designed by Chris Doty-Humphrey
+- `ChaCha4`: A stream cipher designed by Daniel J. Bernstein. We reduce the rounds to 4 for a faster non-cryptographic version.
 
 Most of the PRNGs are parallelized scalar PRNGs. For most of those, variants with all vector lanes available with [`stdsimd`](https://github.com/rust-lang-nursery/stdsimd) are provided.
 
