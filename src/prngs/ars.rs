@@ -1,6 +1,8 @@
 // When only one 128-bit stream is used, there is no worry of correlation. If
 // multiple streams are used, it is trivial to avoid correlation by setting
 // the `input` counter appropriately
+//
+// I do not know if a `aarch64` implementation is possible
 
 use std::arch::x86_64::*;
 use std::simd::*;
@@ -31,6 +33,9 @@ const KEY_WEYL: u64x2 = u64x2::new(
 );
 
 /// ARS-5 from [Random123]
+///
+/// A single stream
+/// 4 rounds is not "Crush-resistant"
 ///
 /// [Random123]: http://www.deshawresearch.com/resources_random123.html
 pub struct Ars5 {
@@ -91,6 +96,11 @@ impl SeedableRng for Ars5 {
 }
 
 /// ARS-7 from [Random123]
+///
+/// A single stream
+///
+/// > We favor use of the latter variants, with the extra safety margin, since
+/// the performance penalty is quite small.
 ///
 /// [Random123]: http://www.deshawresearch.com/resources_random123.html
 pub struct Ars7 {

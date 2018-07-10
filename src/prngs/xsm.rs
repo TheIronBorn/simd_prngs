@@ -67,9 +67,9 @@ macro_rules! make_xsm32 {
 
                         // xsm.generate();
                         let mut old_lcg_low = self.lcg_low;
-                        self.lcg_low += self.lcg_adder;
-                        old_lcg_low += (self.lcg_low < self.lcg_adder) as u32;
-                        self.lcg_high += old_lcg_low;
+                        self.lcg_low = self.lcg_low.wrapping_add(self.lcg_adder);
+                        old_lcg_low = old_lcg_low.wrapping_add((self.lcg_low < self.lcg_adder) as u32);
+                        self.lcg_high = self.lcg_high.wrapping_add(old_lcg_low);
                     }
                 }
 

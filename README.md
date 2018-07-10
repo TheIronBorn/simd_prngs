@@ -32,4 +32,4 @@ Most of the PRNGs are parallelized scalar PRNGs. For most of those, variants wit
 - `Pcg`: random LCG increments
 - `Xsm`: equally-spaced blocks via XSM's `seek_forward`, `blocks_from_rng`
 
-Otherwise, parellel PRNGs are given a random seed for each stream with `SeedableRng`. The probabilities of stream correlation for such a method are listed in the source code for each PRNG.
+Otherwise, parallel PRNGs are given a random seed for each stream with `SeedableRng`. The probabilities of stream correlation for such a method are listed in the source code for each PRNG.

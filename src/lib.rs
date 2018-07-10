@@ -11,6 +11,7 @@
 #![feature(platform_intrinsics)]
 
 extern crate rand;
+extern crate rand_core;
 
 use std::simd::*;
 use std::{mem, slice};

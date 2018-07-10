@@ -5,3 +5,4 @@ authors = ["TheIronBorn <>"]
 
 [dependencies]
 rand = "0.5"
+rand_core = "0.2"

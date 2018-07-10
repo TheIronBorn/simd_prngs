@@ -45,3 +45,6 @@ pub use self::xsm::*;
 
 mod intel_lcg;
 pub use self::intel_lcg::*;
+
+mod chacha;
+pub use self::chacha::*;
