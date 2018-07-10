@@ -54,22 +54,11 @@ impl Ars5 {
         // SIMD addition for simplicity, unsure of the period).
         self.input += u64x2::new(1, 2);
 
-        macro_rules! round {
-            () => {{
-                kk += KEY_WEYL;
-                v = aes_enc(v, kk);
-            }};
-        }
-
-        round!();
-        round!();
-        round!();
-        round!();
-
-        /*for _ in 0..5 - 1 {
+        // final round is `aes_enc_last`
+        for _ in 0..5 - 1 {
             kk += KEY_WEYL;
             v = aes_enc(v, kk);
-        }*/
+        }
 
         kk += KEY_WEYL;
         aes_enc_last(v, kk)
@@ -119,24 +108,11 @@ impl Ars7 {
         // SIMD addition for simplicity, unsure of the period).
         self.input += u64x2::new(1, 2);
 
-        macro_rules! round {
-            () => {{
-                kk += KEY_WEYL;
-                v = aes_enc(v, kk);
-            }};
-        }
-
-        round!();
-        round!();
-        round!();
-        round!();
-        round!();
-        round!();
-
-        /*for _ in 0..7 - 1 {
+        // final round is `aes_enc_last`
+        for _ in 0..7 - 1 {
             kk += KEY_WEYL;
             v = aes_enc(v, kk);
-        }*/
+        }
 
         kk += KEY_WEYL;
         aes_enc_last(v, kk)
