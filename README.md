@@ -34,3 +34,8 @@ Most of the PRNGs are parallelized scalar PRNGs. For most of those, variants wit
 - `Xsm`: equally-spaced blocks via XSM's `seek_forward`, `blocks_from_rng`
 
 Otherwise, parallel PRNGs are given a random seed for each stream with `SeedableRng`. The probabilities of stream correlation for such a method are listed in the source code for each PRNG.
+
+## Possible future work
+- Other counter-based PRNGs inspired by [Random123](http://www.deshawresearch.com/resources_random123.html). They offer Threefry and Philox but both are too slow to be worthwhile. A faster vectorizable pseudo-random permutation/bijection might be viable (see below). AVX-512 offers instructions which would allow 8 64-bit widening multiplications at once which is roughly equivalent to 8 rounds of Philox2×64.
+- Block ciphers/hashes. Any fast, statistically strong, vectorizable block cipher or hash would be viable. Weakening cryptographic algorithms could be fruitful. Most wouldn't need multiple streams as they tend to generate blocks of data. If multiple streams were implemented though, avoiding correlation would be easy in counter mode.
+- [Mrg32k3a](https://www.informs-sim.org/wsc00papers/090.PDF) is a popular choice for its large period and convenient streaming features, although it is a little slow. If it could be sped up with newer instructions it might be viable.
