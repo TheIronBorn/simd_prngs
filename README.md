@@ -13,7 +13,7 @@ Also provided is a utility for printing a PRNG's output to stdout for use with t
 Note: not all implementations of PRNGs are verified to be correct.
 
 ## Currently implemented PRNGs
-- `Ars5`, `Ars7`: An AES implementation optimized for non-cryptographic designed by D. E. Shaw Research
+- `Ars5`, `Ars7`: An AES implementation optimized for non-cryptographic use designed by D. E. Shaw Research
 - `rand_sse`: An LCG designed for SSE2 hardware by Intel
 - `Jsf32`, `Jsf64`: A small chaotic PRNG designed by Bob Jenkins.
 - `Sfc32`, `Sfc64`: A small chaotic PRNG combined with a counter, designed by Chris Doty-Humphrey.
