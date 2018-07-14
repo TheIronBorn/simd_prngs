@@ -35,7 +35,7 @@ const KEY_WEYL: u64x2 = u64x2::new(
 /// ARS-5 from [Random123]
 ///
 /// A single stream
-/// 4 rounds is not "Crush-resistant"
+/// 4 rounds is not "Crush-resistant" (ARS-4 passes 256 GB with PractRand)
 ///
 /// [Random123]: http://www.deshawresearch.com/resources_random123.html
 pub struct Ars5 {
@@ -55,7 +55,7 @@ impl Ars5 {
         self.input += u64x2::new(1, 2);
 
         // final round is `aes_enc_last`
-        for _ in 0..5 - 1 {
+        for _round in 0..5 - 1 {
             kk += KEY_WEYL;
             v = aes_enc(v, kk);
         }
@@ -109,7 +109,7 @@ impl Ars7 {
         self.input += u64x2::new(1, 2);
 
         // final round is `aes_enc_last`
-        for _ in 0..7 - 1 {
+        for _round in 0..7 - 1 {
             kk += KEY_WEYL;
             v = aes_enc(v, kk);
         }

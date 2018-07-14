@@ -22,7 +22,12 @@ macro_rules! make_pcg {
 
                 // This rotate could be replaced by a similarly functioning
                 // vector shuffle on older hardware (24 possible shuffles,
-                // 6 with "rotate one bit right" behavior)
+                // 6 with "rotate one byte right" behavior)
+                // something of the form of:
+                /*let shuffles = (rotate_lane_by_0_bytes, rotate_lane_by_1_bytes, ...);
+                let shuffle_indices = shuffle_by(shuffles, rot);
+                let result = shuffle_by(xorshifted, shuffle_indices);*/
+
                 // xorshifted.rotate_right(rot)
                 (xorshifted >> rot) | (xorshifted << (32 - rot))
             }
