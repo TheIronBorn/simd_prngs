@@ -4,11 +4,11 @@ pub use self::ars::*;
 mod sfc;
 pub use self::sfc::*;
 
-mod sfc_alt;
-pub use self::sfc_alt::*;
+// too many items to glob use
+pub mod sfc_alt;
 
-mod vf;
-pub use self::vf::*;
+// too many items to glob use
+pub mod vf;
 
 mod jsf;
 pub use self::jsf::*;

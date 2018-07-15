@@ -35,6 +35,7 @@ const KEY_WEYL: u64x2 = u64x2::new(
 /// ARS-5 from [Random123]
 ///
 /// A single stream
+///
 /// 4 rounds is not "Crush-resistant" (ARS-4 passes 256 GB with PractRand)
 ///
 /// [Random123]: http://www.deshawresearch.com/resources_random123.html
@@ -87,9 +88,6 @@ impl SeedableRng for Ars5 {
 /// ARS-7 from [Random123]
 ///
 /// A single stream
-///
-/// > We favor use of the latter variants, with the extra safety margin, since
-/// the performance penalty is quite small.
 ///
 /// [Random123]: http://www.deshawresearch.com/resources_random123.html
 pub struct Ars7 {

@@ -230,4 +230,5 @@ init! { init_rand_xsm32_x16, Xsm32x16, from_rng }
 
 bench! { gen_intel_lcg, float_intel_lcg, IntelLcg, u32x4, f32x4 }
 
-generate! { gen_chacha4, ChaCha4, u32x16 }
+bench! { gen_chacha4, float_chacha4, ChaCha4, u32x16, f32x16 }
+bench! { gen_chacha4_a, float_chacha4_a, ChaChaA4, u32x16, f32x16 }
