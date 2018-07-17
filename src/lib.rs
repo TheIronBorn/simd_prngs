@@ -9,6 +9,9 @@
 
 #![feature(stdsimd)]
 #![feature(platform_intrinsics)]
+#![cfg_attr(feature = "cargo-clippy", allow(unreadable_literal))]
+#![cfg_attr(feature = "cargo-clippy", allow(reverse_range_loop))]
+#![cfg_attr(feature = "cargo-clippy", allow(cast_lossless))]
 
 extern crate rand;
 extern crate rand_core;
@@ -83,6 +86,23 @@ macro_rules! impl_rotates {
 
                 #[inline(always)]
                 fn rotate_right(self, n: $elem_ty) -> Self {
+                    const BITS: $elem_ty = mem::size_of::<$elem_ty>() as $elem_ty * 8;
+                    // Protect against undefined behavior for over-long bit shifts
+                    let n = n % BITS;
+                    (self >> n) | (self << ((BITS - n) % BITS))
+                }
+            }
+            impl Rotates<$ty> for $ty {
+                #[inline(always)]
+                fn rotate_left(self, n: $ty) -> Self {
+                    const BITS: $elem_ty = mem::size_of::<$elem_ty>() as $elem_ty * 8;
+                    // Protect against undefined behavior for over-long bit shifts
+                    let n = n % BITS;
+                    (self << n) | (self >> ((BITS - n) % BITS))
+                }
+
+                #[inline(always)]
+                fn rotate_right(self, n: $ty) -> Self {
                     const BITS: $elem_ty = mem::size_of::<$elem_ty>() as $elem_ty * 8;
                     // Protect against undefined behavior for over-long bit shifts
                     let n = n % BITS;

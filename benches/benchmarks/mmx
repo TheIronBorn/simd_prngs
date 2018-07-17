@@ -1,0 +1,178 @@
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out
+
+
+running 161 tests
+test float_ars7                         ... bench:      21,713 ns/iter (+/- 14,602) = 754 MB/s
+test float_xsm32_x2                     ... bench:       8,116 ns/iter (+/- 2,877) = 1009 MB/s
+test float_ars5                         ... bench:      16,210 ns/iter (+/- 14,593) = 1010 MB/s
+test float_pcg32x2                      ... bench:       7,469 ns/iter (+/- 3,791) = 1096 MB/s
+test float_pcg32x4                      ... bench:      14,168 ns/iter (+/- 6,839) = 1156 MB/s
+test float_pcg32x8                      ... bench:      27,322 ns/iter (+/- 19,908) = 1199 MB/s
+test float_lfsr113_x2                   ... bench:       6,462 ns/iter (+/- 3,488) = 1267 MB/s
+test float_xsm64_x2                     ... bench:      10,002 ns/iter (+/- 2,693) = 1638 MB/s
+test float_xsm64_x8                     ... bench:      39,189 ns/iter (+/- 56,513) = 1672 MB/s
+test float_pcg_fixed_xsl32x2            ... bench:       4,889 ns/iter (+/- 2,716) = 1675 MB/s
+test float_xorshift32_x2                ... bench:       4,755 ns/iter (+/- 2,773) = 1722 MB/s
+test float_lcg32x2                      ... bench:       4,744 ns/iter (+/- 2,152) = 1726 MB/s
+test float_sfc32_x2                     ... bench:       4,746 ns/iter (+/- 2,657) = 1726 MB/s
+test float_pcg_fixed_xsh32x2            ... bench:       4,685 ns/iter (+/- 1,677) = 1748 MB/s
+test float_xsm64_x4                     ... bench:      17,847 ns/iter (+/- 9,096) = 1836 MB/s
+test float_jsf32_x2                     ... bench:       4,449 ns/iter (+/- 2,888) = 1841 MB/s
+test float_xoroshiro128starstar_x2      ... bench:       8,370 ns/iter (+/- 4,948) = 1957 MB/s
+test float_xoshiro512starstar_x8        ... bench:      32,502 ns/iter (+/- 4,523) = 2016 MB/s
+test float_xoroshiro128starstar_x4      ... bench:      15,947 ns/iter (+/- 11,831) = 2054 MB/s
+test float_xoroshiro128starstar_x8      ... bench:      31,353 ns/iter (+/- 26,131) = 2090 MB/s
+test float_xoshiro256starstar_x8        ... bench:      30,553 ns/iter (+/- 22,283) = 2144 MB/s
+test float_xsm32_x8                     ... bench:      14,801 ns/iter (+/- 7,050) = 2213 MB/s
+test float_xoshiro512starstar_x4        ... bench:      14,784 ns/iter (+/- 9,916) = 2216 MB/s
+test float_xoshiro512starstar_x2        ... bench:       7,363 ns/iter (+/- 3,882) = 2225 MB/s
+test float_chacha4                      ... bench:      29,194 ns/iter (+/- 18,937) = 2244 MB/s
+test float_xoshiro256starstar_x2        ... bench:       7,239 ns/iter (+/- 5,927) = 2263 MB/s
+test float_xoshiro256starstar_x4        ... bench:      14,265 ns/iter (+/- 6,604) = 2297 MB/s
+test float_lfsr258_x8                   ... bench:      28,457 ns/iter (+/- 15,144) = 2302 MB/s
+test float_xorshift128_x2               ... bench:       3,545 ns/iter (+/- 2,954) = 2310 MB/s
+test float_lfsr258_x2                   ... bench:       6,707 ns/iter (+/- 1,762) = 2442 MB/s
+test float_lfsr258_x4                   ... bench:      13,356 ns/iter (+/- 7,918) = 2453 MB/s
+test float_pcg_fixed_xsh32x4            ... bench:       6,504 ns/iter (+/- 610) = 2519 MB/s
+test float_xsm32_x4                     ... bench:       6,335 ns/iter (+/- 2,477) = 2586 MB/s
+test float_pcg_fixed_xsl32x4            ... bench:       6,223 ns/iter (+/- 4,086) = 2632 MB/s
+test float_lfsr113_x16                  ... bench:      23,941 ns/iter (+/- 15,650) = 2737 MB/s
+test float_chacha4_a                    ... bench:      23,677 ns/iter (+/- 16,034) = 2767 MB/s
+test float_lcg32x4                      ... bench:       5,810 ns/iter (+/- 3,465) = 2819 MB/s
+test float_xsm32_x16                    ... bench:      23,069 ns/iter (+/- 17,337) = 2840 MB/s
+test float_pcg_fixed_xsh32x8            ... bench:      11,476 ns/iter (+/- 397) = 2855 MB/s
+test float_lfsr113_x4                   ... bench:       5,721 ns/iter (+/- 4,552) = 2863 MB/s
+test float_lfsr113_x8                   ... bench:      10,975 ns/iter (+/- 10,458) = 2985 MB/s
+test float_pcg_fixed_xsl32x8            ... bench:       9,933 ns/iter (+/- 5,511) = 3298 MB/s
+test float_lcg32x8                      ... bench:       9,760 ns/iter (+/- 6,100) = 3357 MB/s
+test float_mwc8                         ... bench:       4,694 ns/iter (+/- 391) = 3490 MB/s
+test float_sfc64_x8                     ... bench:      17,877 ns/iter (+/- 485) = 3665 MB/s
+test float_sfc64_x2                     ... bench:       4,456 ns/iter (+/- 2,141) = 3676 MB/s
+test float_sfc32_x4                     ... bench:       4,284 ns/iter (+/- 2,483) = 3824 MB/s
+test float_intel_lcg                    ... bench:       4,164 ns/iter (+/- 2,668) = 3934 MB/s
+test float_jsf32_x4                     ... bench:       4,095 ns/iter (+/- 2,426) = 4000 MB/s
+test float_xorshift32_x4                ... bench:       4,043 ns/iter (+/- 1,940) = 4052 MB/s
+test float_sfc32_x8                     ... bench:       8,021 ns/iter (+/- 3,902) = 4085 MB/s
+test float_sfc64_x4                     ... bench:       7,969 ns/iter (+/- 829) = 4111 MB/s
+test float_mwc4                         ... bench:       3,898 ns/iter (+/- 1,371) = 4203 MB/s
+test float_mwc2                         ... bench:       3,841 ns/iter (+/- 1,485) = 4265 MB/s
+test float_jsf64_x2                     ... bench:       3,832 ns/iter (+/- 2,941) = 4275 MB/s
+test float_sfc32_x16                    ... bench:      15,143 ns/iter (+/- 7,793) = 4327 MB/s
+test float_jsf64_x4                     ... bench:       7,044 ns/iter (+/- 3,482) = 4651 MB/s
+test float_jsf32_x8                     ... bench:       6,960 ns/iter (+/- 5,947) = 4708 MB/s
+test float_jsf64_x8                     ... bench:      13,847 ns/iter (+/- 7,275) = 4732 MB/s
+test float_jsf32_x16                    ... bench:      13,398 ns/iter (+/- 7,466) = 4891 MB/s
+test float_xorshift128plus_x2           ... bench:       3,157 ns/iter (+/- 2,437) = 5189 MB/s
+test float_xorshift128_x4               ... bench:       3,142 ns/iter (+/- 1,373) = 5214 MB/s
+test float_xorshift32_x8                ... bench:       5,892 ns/iter (+/- 2,068) = 5561 MB/s
+test float_xorshift128_x8               ... bench:       5,734 ns/iter (+/- 3,684) = 5714 MB/s
+test float_xorshift128plus_x4           ... bench:       5,337 ns/iter (+/- 160) = 6139 MB/s
+test float_xorshift128_x16              ... bench:      10,409 ns/iter (+/- 3,718) = 6296 MB/s
+test float_xorshift128plus_x8           ... bench:      10,296 ns/iter (+/- 9,642) = 6365 MB/s
+test float_xorshift32_x16               ... bench:       9,849 ns/iter (+/- 5,794) = 6654 MB/s
+
+test gen_ars7                           ... bench:      21,680 ns/iter (+/- 5,803) = 755 MB/s
+test gen_sfc16_x2                       ... bench:       4,471 ns/iter (+/- 1,751) = 916 MB/s
+test gen_ars5                           ... bench:      17,139 ns/iter (+/- 20,142) = 955 MB/s
+test gen_xsm32_x2                       ... bench:       6,747 ns/iter (+/- 4,571) = 1214 MB/s
+test gen_pcg32x2                        ... bench:       6,462 ns/iter (+/- 4,870) = 1267 MB/s
+test gen_lfsr113_x2                     ... bench:       6,415 ns/iter (+/- 6,084) = 1277 MB/s
+test gen_pcg32x8                        ... bench:      25,539 ns/iter (+/- 14,090) = 1283 MB/s
+test gen_pcg32x4                        ... bench:      11,403 ns/iter (+/- 196) = 1436 MB/s
+test gen_pcg_fixed_xsl32x2              ... bench:       5,375 ns/iter (+/- 6,246) = 1524 MB/s
+test gen_lcg32x2                        ... bench:       4,494 ns/iter (+/- 2,315) = 1822 MB/s
+test gen_sfc16_x4                       ... bench:       4,442 ns/iter (+/- 2,145) = 1844 MB/s
+test gen_pcg_fixed_xsh32x2              ... bench:       4,344 ns/iter (+/- 47) = 1885 MB/s
+test gen_xsm64_x8                       ... bench:      34,405 ns/iter (+/- 13,985) = 1904 MB/s
+test gen_lfsr258_x8                     ... bench:      33,860 ns/iter (+/- 24,947) = 1935 MB/s
+test gen_xorshift32_x2                  ... bench:       4,200 ns/iter (+/- 2,458) = 1950 MB/s
+test gen_xoshiro512starstar_x8          ... bench:      32,357 ns/iter (+/- 20,595) = 2025 MB/s
+test gen_xsm64_x2                       ... bench:       7,722 ns/iter (+/- 6,336) = 2121 MB/s
+test gen_sfc32_x2                       ... bench:       3,846 ns/iter (+/- 2,942) = 2130 MB/s
+test gen_xoshiro256starstar_x4          ... bench:      14,847 ns/iter (+/- 7,420) = 2207 MB/s
+test gen_xoroshiro128starstar_x2        ... bench:       7,359 ns/iter (+/- 2,912) = 2226 MB/s
+test gen_xsm64_x4                       ... bench:      14,577 ns/iter (+/- 5,742) = 2247 MB/s
+test gen_xoroshiro128starstar_x4        ... bench:      14,414 ns/iter (+/- 10,534) = 2273 MB/s
+test gen_xoroshiro128starstar_x8        ... bench:      27,764 ns/iter (+/- 17,722) = 2360 MB/s
+test gen_lfsr258_x4                     ... bench:      13,812 ns/iter (+/- 7,646) = 2372 MB/s
+test gen_pcg_fixed_xsh32x8              ... bench:      12,992 ns/iter (+/- 3,401) = 2522 MB/s
+test gen_xoshiro512starstar_x4          ... bench:      12,883 ns/iter (+/- 9,844) = 2543 MB/s
+test gen_lfsr113_x4                     ... bench:       6,434 ns/iter (+/- 5,574) = 2546 MB/s
+test gen_xoshiro256starstar_x8          ... bench:      25,723 ns/iter (+/- 17,530) = 2547 MB/s
+test gen_xoshiro256starstar_x2          ... bench:       6,261 ns/iter (+/- 3,661) = 2616 MB/s
+test gen_chacha4                        ... bench:      24,536 ns/iter (+/- 13,310) = 2671 MB/s
+test gen_pcg_fixed_xsl32x4              ... bench:       6,124 ns/iter (+/- 1,438) = 2675 MB/s
+test gen_pcg_fixed_xsh32x4              ... bench:       6,082 ns/iter (+/- 13,547) = 2693 MB/s
+test gen_lcg32x4                        ... bench:       6,076 ns/iter (+/- 3,772) = 2696 MB/s
+test gen_lfsr113_x16                    ... bench:      24,220 ns/iter (+/- 20,261) = 2705 MB/s
+test gen_lfsr113_x8                     ... bench:      12,108 ns/iter (+/- 7,811) = 2706 MB/s
+test gen_xoshiro512starstar_x2          ... bench:       6,025 ns/iter (+/- 1,002) = 2719 MB/s
+test gen_jsf32_x2                       ... bench:       2,979 ns/iter (+/- 1,679) = 2749 MB/s
+test gen_lcg32x8                        ... bench:      11,466 ns/iter (+/- 4,920) = 2857 MB/s
+test gen_xsm32_x4                       ... bench:       5,630 ns/iter (+/- 3,807) = 2910 MB/s
+test gen_lfsr258_x2                     ... bench:       5,543 ns/iter (+/- 5,043) = 2955 MB/s
+test gen_xsm32_x16                      ... bench:      21,466 ns/iter (+/- 17,873) = 3053 MB/s
+test gen_xsm32_x8                       ... bench:      10,687 ns/iter (+/- 4,087) = 3066 MB/s
+test gen_pcg_fixed_xsl32x8              ... bench:      10,267 ns/iter (+/- 4,993) = 3191 MB/s
+test gen_chacha4_a                      ... bench:      17,330 ns/iter (+/- 6,992) = 3781 MB/s
+test gen_intel_lcg                      ... bench:       4,076 ns/iter (+/- 633) = 4019 MB/s
+test gen_mwc8                           ... bench:       3,871 ns/iter (+/- 1,126) = 4232 MB/s
+test gen_xorshift128_x2                 ... bench:       1,907 ns/iter (+/- 17) = 4295 MB/s
+test gen_sfc64_x2                       ... bench:       3,562 ns/iter (+/- 2,341) = 4599 MB/s
+test gen_sfc32_x4                       ... bench:       3,541 ns/iter (+/- 2,689) = 4626 MB/s
+test gen_xorshift32_x4                  ... bench:       3,425 ns/iter (+/- 1,746) = 4783 MB/s
+test gen_mwc4                           ... bench:       3,309 ns/iter (+/- 1,820) = 4951 MB/s
+test gen_sfc64_x8                       ... bench:      13,222 ns/iter (+/- 7,875) = 4956 MB/s
+test gen_sfc64_x4                       ... bench:       6,344 ns/iter (+/- 4,123) = 5165 MB/s
+test gen_mwc2                           ... bench:       3,077 ns/iter (+/- 1,123) = 5324 MB/s
+test gen_jsf32_x4                       ... bench:       2,963 ns/iter (+/- 2,251) = 5529 MB/s
+test gen_sfc32_x8                       ... bench:       5,909 ns/iter (+/- 4,696) = 5545 MB/s
+test gen_jsf64_x2                       ... bench:       2,942 ns/iter (+/- 1,789) = 5569 MB/s
+test gen_sfc32_x16                      ... bench:      11,744 ns/iter (+/- 3,283) = 5580 MB/s
+test gen_jsf64_x4                       ... bench:       5,861 ns/iter (+/- 5,589) = 5590 MB/s
+test gen_jsf32_x16                      ... bench:      11,347 ns/iter (+/- 4,840) = 5775 MB/s
+test gen_sfc16_x16                      ... bench:       5,575 ns/iter (+/- 2,210) = 5877 MB/s
+test gen_sfc16_x32                      ... bench:      10,997 ns/iter (+/- 6,275) = 5959 MB/s
+test gen_jsf64_x8                       ... bench:      10,970 ns/iter (+/- 8,222) = 5974 MB/s
+test gen_jsf32_x8                       ... bench:       5,300 ns/iter (+/- 1,443) = 6182 MB/s
+test gen_sfc16_x8                       ... bench:       2,626 ns/iter (+/- 1,096) = 6239 MB/s
+test gen_xorshift128_x4                 ... bench:       2,050 ns/iter (+/- 647) = 7992 MB/s
+test gen_xorshift32_x8                  ... bench:       4,045 ns/iter (+/- 3,108) = 8100 MB/s
+test gen_xorshift128plus_x2             ... bench:       1,832 ns/iter (+/- 1,243) = 8943 MB/s
+test gen_xorshift128plus_x8             ... bench:       6,854 ns/iter (+/- 3,117) = 9561 MB/s
+test gen_xorshift32_x16                 ... bench:       6,492 ns/iter (+/- 10,851) = 10094 MB/s
+test gen_xorshift128plus_x4             ... bench:       3,150 ns/iter (+/- 2,549) = 10402 MB/s
+test gen_xorshift128_x8                 ... bench:       3,115 ns/iter (+/- 871) = 10519 MB/s
+test gen_xorshift128_x16                ... bench:       5,496 ns/iter (+/- 2,958) = 11924 MB/s
+
+test init_block_xsm32_x16               ... bench:         846 ns/iter (+/- 222)
+test init_block_xsm32_x2                ... bench:          78 ns/iter (+/- 73)
+test init_block_xsm32_x4                ... bench:         195 ns/iter (+/- 117)
+test init_block_xsm32_x8                ... bench:         410 ns/iter (+/- 334)
+test init_jumps_xoroshiro128starstar_x2 ... bench:         363 ns/iter (+/- 178)
+test init_jumps_xoroshiro128starstar_x4 ... bench:       1,128 ns/iter (+/- 733)
+test init_jumps_xoroshiro128starstar_x8 ... bench:       2,599 ns/iter (+/- 1,108)
+test init_jumps_xoshiro256starstar_x2   ... bench:         476 ns/iter (+/- 358)
+test init_jumps_xoshiro256starstar_x4   ... bench:       1,410 ns/iter (+/- 525)
+test init_jumps_xoshiro256starstar_x8   ... bench:       3,235 ns/iter (+/- 1,908)
+test init_rand_xoroshiro128starstar_x2  ... bench:          28 ns/iter (+/- 28)
+test init_rand_xoroshiro128starstar_x4  ... bench:          44 ns/iter (+/- 27)
+test init_rand_xoroshiro128starstar_x8  ... bench:          96 ns/iter (+/- 13)
+test init_rand_xoshiro256starstar_x2    ... bench:          45 ns/iter (+/- 3)
+test init_rand_xoshiro256starstar_x4    ... bench:          91 ns/iter (+/- 65)
+test init_rand_xoshiro256starstar_x8    ... bench:         195 ns/iter (+/- 176)
+test init_rand_xsm32_x16                ... bench:         111 ns/iter (+/- 100)
+test init_rand_xsm32_x2                 ... bench:          20 ns/iter (+/- 14)
+test init_rand_xsm32_x4                 ... bench:          31 ns/iter (+/- 25)
+test init_rand_xsm32_x8                 ... bench:          54 ns/iter (+/- 29)
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 161 measured; 0 filtered out
+
