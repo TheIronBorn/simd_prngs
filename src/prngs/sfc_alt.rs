@@ -14,6 +14,30 @@ use std::simd::*;
 
 use rng_impl::*;
 
+macro_rules! rotate_left {
+    ($x:expr, 48, u64x2) => {{
+        let vec8 = u8x16::from_bits($x);
+        const ROTL_48: [u32; 16] = [6, 7, 0, 5, 4, 3, 1, 2, 15, 14, 9, 13, 11, 10, 12, 8];
+        let rotated: u8x16 = unsafe { simd_shuffle16(vec8, vec8, ROTL_48) };
+        u64x2::from_bits(rotated)
+    }};
+    ($x:expr, 48, u64x4) => {{
+        let vec8 = u8x32::from_bits($x);
+        const ROTL_48: [u32; 32] = [6, 7, 3, 2, 1, 5, 4, 0, 15, 14, 10, 9, 11, 8, 12, 13, 23, 22, 19, 18, 16, 17, 20, 21, 31, 30, 29, 26, 24, 25, 28, 27];
+        let rotated: u8x32 = unsafe { simd_shuffle32(vec8, vec8, ROTL_48) };
+        u64x4::from_bits(rotated)
+    }};
+    ($x:expr, 48, u64x8) => {{
+        let vec8 = u8x64::from_bits($x);
+        const ROTL_48: [u32; 64] = [7, 6, 2, 3, 5, 1, 0, 4, 14, 15, 10, 12, 13, 9, 8, 11, 23, 22, 18, 21, 19, 16, 17, 20, 30, 31, 27, 24, 26, 29, 28, 25, 38, 39, 32, 35, 34, 36, 37, 33, 47, 46, 41, 42, 44, 45, 40, 43, 54, 55, 49, 48, 50, 51, 53, 52, 63, 62, 61, 59, 57, 56, 58, 60];
+        let rotated: u8x64 = unsafe { simd_shuffle64(vec8, vec8, ROTL_48) };
+        u64x8::from_bits(rotated)
+    }};
+    ($x:expr, $rot:expr, $y:ident) => {{
+        $x.rotate_left($rot)
+    }};
+}
+
 macro_rules! sfc_alt_a {
     (
         $rng_name:ident,
@@ -31,11 +55,11 @@ macro_rules! sfc_alt_a {
                 //experiment with larger pseudo-counter
                 self.counter += 1;
                 // counter2 += counter + (counter ? 0 : 1);//2-word LCG
-                self.counter2 +=
-                    self.counter - $vector::from_bits(self.counter.eq($vector::splat(0)));
+                let cmp = self.counter.eq($vector::splat(0));
+                self.counter2 += self.counter - $vector::from_bits(cmp);
                 let tmp = self.a + self.b; //counter2;
-                                           //a = b ^ (b >> $sh2);
-                                           //a = b + (b << $sh3);
+                //a = b ^ (b >> $sh2);
+                //a = b + (b << $sh3);
                 self.a = self.b + self.counter2;
                 self.b = self.b.rotate_left($sh1) + tmp;
                 self.a
@@ -228,12 +252,12 @@ macro_rules! sfc_alt_h {
 macro_rules! sfc_alt_i {
     (
         $rng_name:ident,
-        $vector:ident,constants:
-        $sh1:expr,
+        $vector:ident,
+        constants: $sh1:expr,
         $sh2:expr,
-        $sh3:expr,e1:
-        $e_sh:expr,e2:
-        $e_sh1:expr,
+        $sh3:expr,
+        e1: $e_sh:expr,
+        e2: $e_sh1:expr,
         $e_sh2:expr
     ) => {
         impl $rng_name {
@@ -254,12 +278,12 @@ macro_rules! sfc_alt_i {
 macro_rules! sfc_alt_j {
     (
         $rng_name:ident,
-        $vector:ident,constants:
-        $sh1:expr,
+        $vector:ident,
+        constants: $sh1:expr,
         $sh2:expr,
-        $sh3:expr,e1:
-        $e_sh:expr,e2:
-        $e_sh1:expr,
+        $sh3:expr,
+        e1: $e_sh:expr,
+        e2: $e_sh1:expr,
         $e_sh2:expr
     ) => {
         impl $rng_name {
@@ -277,22 +301,37 @@ macro_rules! sfc_alt_j {
 }
 
 macro_rules! sfc_alt_k {
-    ($rng_name:ident, $vector:ident, constants: $sh1:expr, $sh2:expr, $sh3:expr, e1: $e_sh:expr, e2: $e_sh1:expr, $e_sh2:expr) => (
+    (
+        $rng_name:ident,
+        $vector:ident,
+        constants: $sh1:expr,
+        $sh2:expr,
+        $sh3:expr,
+        e1: $e_sh:expr,
+        e2: $e_sh1:expr,
+        $e_sh2:expr
+    ) => {
         impl $rng_name {
             #[inline(always)]
             pub fn generate(&mut self) -> $vector {
+                // My testing puts it at >512GB
+
                 //VERY good speed, 16 bit version failed @ 256 GB (2 GB w/o counter), 32 bit @ ?
                 // enum { SHIFT = (OUTPUT_BITS == 64) ? 43 : ((OUTPUT_BITS == 32) ? 23 : ((OUTPUT_BITS == 16) ? 11 : -1)) };//43, 11, 9
                 self.a += self.b; self.b -= self.c;
                 self.c += self.a; self.a ^= self.counter;
                 self.counter += 1;
                 self.c = self.c.rotate_left($e_sh);
+
+                // This variant seems to be missing a line like the `l` variant:
+                // `self.b += self.b << $e_sh2;`
+
                 //w/ counter    32:29->24, 28->37?, 27->36      16:14->22, 13->23, 12->32, 11->37, 10->37, 9->30, 8->19, 7->30, 6->38, 5->38, 4->29, 3->19, 2->18
                 //w/o counter   32:29->  , 28->  , 27->         16:14->17, 13->19, 12->26, 11->30, 10->31, 9->31, 8->17, 7->31, 6->31, 5->31, 4->30, 3->19, 2->17
                 self.a
             }
         }
-    )
+    };
 }
 
 macro_rules! sfc_alt_l {
@@ -309,7 +348,7 @@ macro_rules! sfc_alt_l {
                 // with 64-bit, `$e_sh1` is 48 which is divisible by 8. We could
                 // then implement this rotate with a vector shuffle (might be
                 // faster on older hardware)
-                self.c = self.c.rotate_left($e_sh1);//cb  with count: ?, 14, 9, ?  ; w/o count: 16, 8, 9, ?
+                self.c = rotate_left!(self.c, $e_sh1, $vector);//cb  with count: ?, 14, 9, ?  ; w/o count: 16, 8, 9, ?
                 self.b += self.b << $e_sh2;//ba
                 self.a
             }

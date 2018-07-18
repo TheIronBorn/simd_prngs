@@ -42,11 +42,22 @@ macro_rules! vf_a {
 }
 
 macro_rules! vf_b {
-    ($rng_name:ident, $vector:ident, $scalar:ty, $half:ident, $shuf:ident, $indices:expr, $rot:expr, $shr:expr, $shl:expr) => (
+    (
+        $rng_name:ident,
+        $vector:ident,
+        $scalar:ty,
+        $half:ident,
+        $shuf:ident,
+        $indices:expr,
+        $rot:expr,
+        $shr:expr,
+        $shl:expr
+    ) => {
         impl $rng_name {
             #[inline(always)]
             pub fn generate(&mut self) -> $vector {
-                // best quality: 16 bit fails @ 1 TB, but not as fast ;; switching `a += b ^ c;` for `a ^= b + c;` increases that to 2 TB
+                // best quality: 16 bit fails @ 1 TB, but not as fast ;; switching `a += b ^
+                // c;` for `a ^= b + c;` increases that to 2 TB
                 let old = self.a + (self.a << $shl);
                 self.a += self.b ^ self.c;
                 self.b = self.c ^ (self.c >> $shr);
@@ -54,7 +65,7 @@ macro_rules! vf_b {
                 old
             }
         }
-    )
+    };
 }
 
 macro_rules! vf_c {

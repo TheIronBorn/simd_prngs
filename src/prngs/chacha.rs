@@ -12,12 +12,12 @@ use rng_impl::*;
 const ROTL_8: [u32; 16] = [1, 2, 3, 0, 5, 6, 7, 4, 9, 10, 11, 8, 13, 14, 15, 12];
 const ROTL_16: [u32; 16] = [2, 3, 0, 1, 6, 7, 4, 5, 10, 11, 8, 9, 14, 15, 12, 13];
 macro_rules! rotate_left {
-    ($x:expr,8) => {{
+    ($x:expr, 8) => {{
         let vec8 = u8x16::from_bits($x);
         let r: u8x16 = unsafe { simd_shuffle16(vec8, vec8, ROTL_8) };
         u32x4::from_bits(r)
     }};
-    ($x:expr,16) => {{
+    ($x:expr, 16) => {{
         let vec8 = u8x16::from_bits($x);
         let r: u8x16 = unsafe { simd_shuffle16(vec8, vec8, ROTL_16) };
         u32x4::from_bits(r)

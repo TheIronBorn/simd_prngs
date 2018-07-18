@@ -2,6 +2,38 @@ use std::simd::*;
 
 use rng_impl::*;
 
+// vertical vector rotations can be better implemented with vector
+// shuffles when the rotate distance is a multiple of 8
+macro_rules! rotate_left {
+    ($x:expr, 16, u32x2) => {{
+        const ROTL_16: [u32; 16] = [2, 3, 0, 1, 6, 7, 4, 5];
+        let vec8 = u8x8::from_bits($x);
+        let r: u8x8 = unsafe { simd_shuffle8(vec8, vec8, ROTL_16) };
+        u32x2::from_bits(r)
+    }};
+    ($x:expr, 16, u32x4) => {{
+        const ROTL_16: [u32; 16] = [2, 3, 0, 1, 6, 7, 4, 5, 10, 11, 8, 9, 14, 15, 12, 13];
+        let vec8 = u8x16::from_bits($x);
+        let r: u8x16 = unsafe { simd_shuffle16(vec8, vec8, ROTL_16) };
+        u32x4::from_bits(r)
+    }};
+    ($x:expr, 16, u32x8) => {{
+        const ROTL_16: [u32; 16] = [2, 3, 0, 1, 6, 7, 4, 5, 10, 11, 8, 9, 14, 15, 12, 13, 18, 19, 16, 17, 22, 23, 20, 21, 26, 27, 24, 25, 30, 31, 28, 29];
+        let vec8 = u8x32::from_bits($x);
+        let r: u8x32 = unsafe { simd_shuffle32(vec8, vec8, ROTL_16) };
+        u32x8::from_bits(r)
+    }};
+    ($x:expr, 16, u32x16) => {{
+        const ROTL_16: [u32; 16] = [2, 3, 0, 1, 6, 7, 4, 5, 10, 11, 8, 9, 14, 15, 12, 13, 18, 19, 16, 17, 22, 23, 20, 21, 26, 27, 24, 25, 30, 31, 28, 29, 34, 35, 32, 33, 38, 39, 36, 37, 42, 43, 40, 41, 46, 47, 44, 45, 50, 51, 48, 49, 54, 55, 52, 53, 58, 59, 56, 57, 62, 63, 60, 61];
+        let vec8 = u8x64::from_bits($x);
+        let r: u8x64 = unsafe { simd_shuffle64(vec8, vec8, ROTL_16) };
+        u32x16::from_bits(r)
+    }};
+    ($x:expr, $rot:expr, $y:ident) => {{
+        $x.rotate_left($rot)
+    }};
+}
+
 macro_rules! make_jsf {
     ($rng_name:ident, $vector:ident, $x:expr, $z:expr) => {
         pub struct $rng_name {
@@ -15,7 +47,7 @@ macro_rules! make_jsf {
             #[inline(always)]
             pub fn generate(&mut self) -> $vector {
                 let e = self.a - self.b.rotate_left($x);
-                self.a = self.b ^ self.c.rotate_left($z);
+                self.a = self.b ^ rotate_left!(self.c, $z, $vector);
                 self.b = self.c + self.d;
                 self.c = self.d + e;
                 self.d = e + self.a;
@@ -73,8 +105,13 @@ macro_rules! make_jsf {
         }
     };
 
+    // Other sets that achieve 8.8 bits of avalanche include (9,16), (9,24),
+    // (10,16), (10,24), (11,16), (11,24), (25,8), (25,16), (26,8), (26,16),
+    // (26,17), and (27,16).
+
     (32bit: $rng_name:ident, $vector:ident) => {
-        make_jsf!($rng_name, $vector, 27, 17);
+        // make_jsf!($rng_name, $vector, 27, 17);
+        make_jsf!($rng_name, $vector, 9, 16);
     };
 
     (64bit: $rng_name:ident, $vector:ident) => {
