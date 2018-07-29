@@ -16,19 +16,18 @@
 //!
 //! `-tlmin 256GB` might also be useful
 
-#![feature(stdsimd)]
-
+extern crate packed_simd;
 extern crate rand;
 extern crate simd_prngs;
 
-use std::simd::*;
+use packed_simd::*;
 use std::io::{self, BufWriter};
 use std::io::prelude::*;
 
 use rand::FromEntropy;
 use simd_prngs::*;
 
-// allows `{load,store}_aligned`
+// allows `{from,write_to}_slice_aligned`
 #[repr(align(16))]
 struct Aligned<T>(T);
 
@@ -44,7 +43,7 @@ fn fill_bytes_via_simd(rng: &mut SimdRng, dest: &mut Aligned<[u8; 64]>) {
     let mut read_len = 0;
     for _ in 0..dest.0.len() / CHUNK_SIZE {
         let mut results = Vec8::from_bits(rng.generate());
-        results.store_aligned(&mut dest.0[read_len..read_len + CHUNK_SIZE]);
+        results.write_to_slice_aligned(&mut dest.0[read_len..read_len + CHUNK_SIZE]);
         read_len += CHUNK_SIZE;
     }
 }

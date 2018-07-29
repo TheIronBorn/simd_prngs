@@ -1,4 +1,3 @@
-use std::simd::*;
 use std::arch::x86_64::*;
 
 use rng_impl::*;
@@ -20,8 +19,12 @@ impl IntelLcg {
         const GADD: u32x4 = u32x4::new(2531011, 10395331, 13737667, 1);
         const MASK: u32x4 = u32x4::new(0xFFFFFFFF, 0, 0xFFFFFFFF, 0);
 
-        let shuffle = |x| unsafe { simd_shuffle4(x, x, [2, 3, 0, 1]) };
-        let mul = |x, mul| u32x4::from_bits(unsafe { _mm_mul_epu32(__m128i::from_bits(x), __m128i::from_bits(mul)) });
+        let shuffle = |x: u32x4| shuffle!(x, [2, 3, 0, 1]);
+        let mul = |x, mul| {
+            u32x4::from_bits(unsafe {
+                _mm_mul_epu32(__m128i::from_bits(x), __m128i::from_bits(mul))
+            })
+        };
 
         let mut cur_seed_split = shuffle(self.cur_seed);
 
@@ -52,7 +55,7 @@ impl SeedableRng for IntelLcg {
     fn from_rng<R: RngCore>(mut rng: R) -> Result<Self, Error> {
         // merely 32-bit seed, quality might be improved with larger seeds
         let seed: u32 = rng.gen();
-        let cur_seed = u32x4::new(seed, seed+1, seed, seed+1);
+        let cur_seed = u32x4::new(seed, seed + 1, seed, seed + 1);
 
         Ok(Self { cur_seed })
     }

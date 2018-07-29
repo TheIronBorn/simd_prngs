@@ -3,6 +3,10 @@ name = "simd_prngs"
 version = "0.1.0"
 authors = ["TheIronBorn <>"]
 
+[features]
+default = ["packed_simd"]
+
 [dependencies]
 rand = "0.5"
 rand_core = "0.2"
+packed_simd = { version = "0.1", optional = true, features = ["into_bits"] }

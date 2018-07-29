@@ -11,7 +11,6 @@
 //! VeryFast generators.
 
 use std::mem;
-use std::simd::*;
 
 use rng_impl::*;
 
@@ -34,7 +33,7 @@ macro_rules! vf_a {
                 let old = self.a + self.b;
                 self.a = self.b ^ (self.b >> $shr);
                 self.b = self.c + (self.c << $shl);
-                self.c = old + self.c.rotate_left($rot); // $shr,$shl,$rot : 7,3,9 @ 32 bit
+                self.c = old + rotate_left!(self.c, $rot, $vector); // $shr,$shl,$rot : 7,3,9 @ 32 bit
                 old
             }
         }
@@ -61,7 +60,7 @@ macro_rules! vf_b {
                 let old = self.a + (self.a << $shl);
                 self.a += self.b ^ self.c;
                 self.b = self.c ^ (self.c >> $shr);
-                self.c = old + self.c.rotate_left($rot);
+                self.c = old + rotate_left!(self.c, $rot, $vector);
                 old
             }
         }
@@ -86,7 +85,7 @@ macro_rules! vf_c {
                 // faster, simpler, lower quality - just 4-6 ops, very few dependent
                 // 16 bit: 128 MB, 32 bit: 32 GB
                 let old = self.a + self.b;
-                self.a = self.b + self.c.rotate_left($rot);
+                self.a = self.b + rotate_left!(self.c, $rot, $vector);
                 self.b = self.c + (self.c << $shl);
                 self.c = old;
                 self.c
@@ -115,7 +114,7 @@ macro_rules! vf_d {
                 let old = self.a + self.b;
                 self.a = self.b;
                 self.b = self.c + (self.c << $shl);
-                self.c = self.c.rotate_left($rot);
+                self.c = rotate_left!(self.c, $rot, $vector);
                 self.a += self.c;
                 self.c += old;
                 self.a
@@ -139,19 +138,13 @@ macro_rules! vf_e {
         impl $rng_name {
             #[inline(always)]
             pub fn generate(&mut self) -> $vector {
-                /// rotate by half, using vector shuffles (faster on older hardware)
-                #[inline(always)]
-                fn rotate_half(x: $vector) -> $vector {
-                    let x = $half::from_bits(x);
-                    let r: $half = unsafe { $shuf(x, x, $indices) };
-                    $vector::from_bits(r)
-                }
+                const BITS: $scalar = mem::size_of::<$scalar>() as $scalar * 8;
 
                 // uses multiplication, only 2 words, but pretty good aside from that:
                 //16: 1 GB, 32 bit: > 32 TB
                 #[allow(overflowing_literals)]
                 let old = self.a * 0x92ec64765925a395;
-                self.a = self.b ^ rotate_half(self.a);
+                self.a = self.b ^ rotate_left!(self.a, BITS / 2, $vector);
                 self.b = old;
                 self.a + self.b
             }
@@ -174,18 +167,12 @@ macro_rules! vf_f {
         impl $rng_name {
             #[inline(always)]
             pub fn generate(&mut self) -> $vector {
-                /// rotate by half, using vector shuffles (faster on older hardware)
-                #[inline(always)]
-                fn rotate_half(x: $vector) -> $vector {
-                    let x = $half::from_bits(x);
-                    let r: $half = unsafe { $shuf(x, x, $indices) };
-                    $vector::from_bits(r)
-                }
+                const BITS: $scalar = mem::size_of::<$scalar>() as $scalar * 8;
 
                 #[allow(overflowing_literals)]
                 let old = self.a * 0x92ec64765925a395;
+                self.a = rotate_left!(self.a, BITS / 2, $vector) ^ self.b ^ self.c;
                 self.c += 1;
-                self.a = rotate_half(self.a) ^ self.b ^ self.c;
                 self.b = old;
                 self.a
             }
@@ -208,7 +195,7 @@ macro_rules! vf_g {
         impl $rng_name {
             #[inline(always)]
             pub fn generate(&mut self) -> $vector {
-                const BITS: $scalar = mem::size_of::<$scalar>() as $scalar * 8;
+                const BITS: u32 = mem::size_of::<$scalar>() as u32 * 8;
 
                 let old = self.a ^ (self.a >> (BITS / 2));
                 //self.c += (self.c << 3) + 1;

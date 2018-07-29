@@ -1,5 +1,3 @@
-use std::simd::*;
-
 use rng_impl::*;
 
 macro_rules! make_xoshiro {
@@ -20,7 +18,7 @@ macro_rules! make_xoshiro {
                 // The paper suggests the rotate could be replaced by
                 // `x ^= x >> rot`. Perhaps even a single byte vector shuffle?
                 // (only a one bit difference)
-                let result_starstar = (self.s1 * 5).rotate_left(7) * 9;
+                let result_starstar = rotate_left!(self.s1 * 5, 7, $vector) * 9;
 
                 let t = self.s1 << 17;
 
@@ -31,7 +29,7 @@ macro_rules! make_xoshiro {
 
                 self.s2 ^= t;
 
-                self.s3 = self.s3.rotate_left(45);
+                self.s3 = rotate_left!(self.s3, 45, $vector);
 
                 result_starstar
             }
@@ -180,7 +178,7 @@ macro_rules! make_xoshiro512 {
                 // The paper suggests the rotate could be replaced by
                 // `x ^= x >> rot`. Perhaps even a single byte vector shuffle?
                 // (only a one bit difference)
-                let result_starstar = (self.s1 * 5).rotate_left(7) * 9;
+                let result_starstar = rotate_left!(self.s1 * 5, 7, $vector) * 9;
 
                 let t = self.s1 << 11;
 
@@ -195,7 +193,7 @@ macro_rules! make_xoshiro512 {
 
                 self.s6 ^= t;
 
-                self.s7 = self.s7.rotate_left(21);
+                self.s7 = rotate_left!(self.s7, 21, $vector);
 
                 result_starstar
             }

@@ -1,8 +1,6 @@
 //! 32-bit LCG. This is simply PCG with the bit-level ops removed.
 //! Faster and presumably lower quality.
 
-use std::simd::*;
-
 use rng_impl::*;
 
 macro_rules! make_lcg {
@@ -19,7 +17,9 @@ macro_rules! make_lcg {
                 // Advance internal state
                 // We could easily use different parameters per stream here
                 self.state = oldstate * 6364136223846793005 + self.inc;
-                $vec32::from(oldstate)
+                let r: $vec32 = oldstate.cast();
+                // $vec32::from(oldstate)
+                r
             }
         }
 

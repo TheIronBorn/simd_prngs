@@ -4,8 +4,6 @@
 
 use rng_impl::*;
 
-use std::simd::*;
-
 macro_rules! make_lfsr113 {
     ($rng_name:ident, $vector:ident) => {
         /// Period: 2^113

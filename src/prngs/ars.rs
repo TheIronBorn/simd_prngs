@@ -5,7 +5,6 @@
 // I do not know if a `aarch64` implementation is possible
 
 use std::arch::x86_64::*;
-use std::simd::*;
 
 use rng_impl::*;
 

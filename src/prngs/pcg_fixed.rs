@@ -3,8 +3,6 @@
 //!
 //! PcgFixedXsh32x2 reached 1TB with PractRand
 
-use std::simd::*;
-
 use rng_impl::*;
 
 macro_rules! make_pcg_xsh {
@@ -21,15 +19,17 @@ macro_rules! make_pcg_xsh {
                 // Advance internal state
                 self.state = oldstate * 6364136223846793005 + self.inc;
 
-                const XTYPE_BITS: u64 = 32;
-                const BITS: u64 = 64;
-                const SPARE_BITS: u64 = BITS - XTYPE_BITS;
-                const TOP_SPARE: u64 = 0;
-                const BOTTOM_SPARE: u64 = SPARE_BITS - TOP_SPARE;
-                const XSHIFT: u64 = (TOP_SPARE + XTYPE_BITS) / 2;
+                const XTYPE_BITS: u32 = 32;
+                const BITS: u32 = 64;
+                const SPARE_BITS: u32 = BITS - XTYPE_BITS;
+                const TOP_SPARE: u32 = 0;
+                const BOTTOM_SPARE: u32 = SPARE_BITS - TOP_SPARE;
+                const XSHIFT: u32 = (TOP_SPARE + XTYPE_BITS) / 2;
 
                 oldstate ^= oldstate >> XSHIFT;
-                $vec32::from(oldstate >> BOTTOM_SPARE)
+                let r: $vec32 = (oldstate >> BOTTOM_SPARE).cast();
+                r
+                // $vec32::from(oldstate >> BOTTOM_SPARE)
             }
         }
 
@@ -62,7 +62,6 @@ make_pcg_xsh! { PcgFixedXsh32x2, u64x2, u32x2 }
 make_pcg_xsh! { PcgFixedXsh32x4, u64x4, u32x4 }
 make_pcg_xsh! { PcgFixedXsh32x8, u64x8, u32x8 }
 
-
 macro_rules! make_pcg_xsl {
     ($rng_name:ident, $vector:ident, $vec32:ident) => {
         pub struct $rng_name {
@@ -85,7 +84,9 @@ macro_rules! make_pcg_xsl {
                 const XSHIFT: u32 = (TOP_SPARE + XTYPE_BITS) / 2;
 
                 oldstate ^= oldstate >> XSHIFT;
-                $vec32::from(oldstate >> BOTTOM_SPARE)
+                let r: $vec32 = (oldstate >> BOTTOM_SPARE).cast();
+                r
+                // $vec32::from(oldstate >> BOTTOM_SPARE)
             }
         }
 

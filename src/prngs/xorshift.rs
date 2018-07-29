@@ -1,5 +1,3 @@
-use std::simd::*;
-
 use rng_impl::*;
 
 macro_rules! make_xorshift {

@@ -1,31 +1,4 @@
-use std::simd::*;
-
 use rng_impl::*;
-
-macro_rules! rotate_left {
-    ($x:expr, $vector:ident, $shuf:ident, $vec8:ident, $indices:expr) => {{
-        let vec8 = $vec8::from_bits($x);
-        let rotated: $vec8 = unsafe { $shuf(vec8, vec8, $indices) };
-        $vector::from_bits(rotated)
-    }}
-
-    ($x:expr, 24, u64x2) => {{
-        const ROTL_24: [u32; 16] = [3, 4, 5, 6, 7, 0, 1, 2, 11, 12, 13, 14, 15, 8, 9, 10];
-        rotate_left!($x, u64x2, simd_shuffle16, u8x16, ROTL_24)
-    }};
-    ($x:expr, 24, u64x4) => {{
-        const ROTL_24: [u32; 32] = [3, 4, 5, 6, 7, 0, 1, 2, 11, 12, 13, 14, 15, 8, 9, 10, 19, 20, 21, 22, 23, 16, 17, 18, 27, 28, 29, 30, 31, 24, 25, 26];
-        rotate_left!($x, u64x4, simd_shuffle32, u8x32, ROTL_24)
-    }};
-    ($x:expr, 24, u64x8) => {{
-        const ROTL_24: [u32; 64] = [3, 4, 5, 6, 7, 0, 1, 2, 11, 12, 13, 14, 15, 8, 9, 10, 19, 20, 21, 22, 23, 16, 17, 18, 27, 28, 29, 30, 31, 24, 25, 26, 35, 36, 37, 38, 39, 32, 33, 34, 43, 44, 45, 46, 47, 40, 41, 42, 51, 52, 53, 54, 55, 48, 49, 50, 59, 60, 61, 62, 63, 56, 57, 58];
-        rotate_left!($x, u64x8, simd_shuffle64, u8x64, ROTL_24)
-    }};
-
-    ($x:expr, $rot:expr, $y:ident) => {{
-        $x.rotate_left($rot)
-    }};
-}
 
 macro_rules! make_xoroshiro {
     ($rng_name:ident, $vector:ident) => {
@@ -45,13 +18,13 @@ macro_rules! make_xoroshiro {
                 // The paper suggests the rotate could be replaced by
                 // `x ^= x >> rot`. Perhaps even a single byte vector shuffle?
                 // (only a one bit difference)
-                let result = (s0 * 5).rotate_left(7) * 9;
+                let result = rotate_left!(s0 * 5, 7, $vector) * 9;
 
                 s1 ^= s0;
                 // this rotate could be implemented as a shuffle (as it is
                 // divisible by 8)
                 self.s0 = rotate_left!(s0, 24, $vector) ^ s1 ^ (s1 << 16); // a, b
-                self.s1 = s1.rotate_left(37); // c
+                self.s1 = rotate_left!(s1, 37, $vector); // c
 
                 result
             }

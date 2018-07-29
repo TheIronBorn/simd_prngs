@@ -1,5 +1,3 @@
-use std::simd::*;
-
 use rng_impl::*;
 
 macro_rules! make_xsm32 {
@@ -17,7 +15,7 @@ macro_rules! make_xsm32 {
                 const K: u32 = 0x6595a395;
 
                 let mut rv = self.history * 0x6595a395;
-                let mut tmp = self.lcg_high + (self.lcg_high ^ self.lcg_low).rotate_left(11);
+                let mut tmp = self.lcg_high + rotate_left!(self.lcg_high ^ self.lcg_low, 11, $vec);
                 tmp *= K;
 
                 let mut old_lcg_low = self.lcg_low;
@@ -151,7 +149,7 @@ macro_rules! make_xsm64 {
                 const K: u64 = 0xA3EC647659359ACD;
 
                 self.history *= K;
-                let mut tmp = self.lcg_high + (self.lcg_high ^ self.lcg_low).rotate_left(19);
+                let mut tmp = self.lcg_high + rotate_left!(self.lcg_high ^ self.lcg_low, 19, $vec);
                 tmp *= K;
 
                 let mut old = self.lcg_low;

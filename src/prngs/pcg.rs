@@ -1,5 +1,3 @@
-use std::simd::*;
-
 use rng_impl::*;
 
 macro_rules! make_pcg {
@@ -17,8 +15,8 @@ macro_rules! make_pcg {
                 // We could easily use different parameters per stream here
                 self.state = oldstate * 6364136223846793005 + self.inc;
                 // Calculate output function (XSH RR), uses old state for max ILP
-                let xorshifted = $vec32::from(((oldstate >> 18) ^ oldstate) >> 27);
-                let rot = $vec32::from(oldstate >> 59);
+                let xorshifted: $vec32 = (((oldstate >> 18) ^ oldstate) >> 27).cast();
+                let rot: $vec32 = (oldstate >> 59).cast();
 
                 // This rotate could be replaced by a similarly functioning
                 // vector shuffle on older hardware (24 possible shuffles,
