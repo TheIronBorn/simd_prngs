@@ -44,6 +44,8 @@ Otherwise, parallel PRNGs are given a random seed for each stream with `Seedable
 
 Sorted by throughput. The full benchmarks are available in the `benches` directory.
 
+NOTE: even with flags like `target-feature=mmx` the benchmarks will still likely differ on other hardware. Latencies and throughputs may still be the same even with the feature flag.
+
 `RUSTFLAGS='-C target-feature=mmx -C codegen-units=1 -C lto=thin' cargo bench` (the oldest SIMD instruction set):
 ```rust
 test gen_ars7                           ... bench:      21,680 ns/iter (+/- 5,803) = 755 MB/s
