@@ -185,6 +185,11 @@ bench! { gen_lcg32x2, float_lcg32x2, Lcg32x2, u32x2, f32x2 }
 bench! { gen_lcg32x4, float_lcg32x4, Lcg32x4, u32x4, f32x4 }
 bench! { gen_lcg32x8, float_lcg32x8, Lcg32x8, u32x8, f32x8 }
 
+generate! { gen_lcg16x2, Lcg16x2, u16x2 }
+generate! { gen_lcg16x4, Lcg16x4, u16x4 }
+generate! { gen_lcg16x8, Lcg16x8, u16x8 }
+generate! { gen_lcg16x16, Lcg16x8, u16x8 }
+
 bench! { gen_pcg32x2, float_pcg32x2, Pcg32x2, u32x2, f32x2 }
 bench! { gen_pcg32x4, float_pcg32x4, Pcg32x4, u32x4, f32x4 }
 bench! { gen_pcg32x8, float_pcg32x8, Pcg32x8, u32x8, f32x8 }
