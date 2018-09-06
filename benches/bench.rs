@@ -119,6 +119,7 @@ macro_rules! wmul_int {
                         let (hi_2, lo) = v.wmul(range);
                         hi = hi_2;
                         let cmp = lo.le(zone);
+                        // explicit `movmsk`: https://github.com/rust-lang-nursery/packed_simd/issues/103
                         let int_mask = unsafe { _mm_movemask_epi8(__m128i::from_bits(cmp)) };
                         test::black_box(int_mask == u8::max_value() as i32);
                         v = cmp.select(v, $uty::from_bits(rng.generate()));
@@ -156,6 +157,7 @@ macro_rules! bitmask_int {
                     // reject x > range
                     for _ in 0..$uty::lanes().trailing_zeros() + 1 {
                         let cmp = x.le($uty::splat(range));
+                        // explicit `movmsk`: https://github.com/rust-lang-nursery/packed_simd/issues/103
                         let int_mask = unsafe { _mm_movemask_epi8(__m128i::from_bits(cmp)) };
                         test::black_box(int_mask == u8::max_value() as i32);
                         x = cmp.select(x, $uty::from_bits(rng.generate()) & mask);
