@@ -35,7 +35,7 @@ const KEY_WEYL: u64x2 = u64x2::new(
 ///
 /// A single stream
 ///
-/// 4 rounds is not "Crush-resistant" (ARS-4 passes 256 GB with PractRand)
+/// 4 rounds is not "Crush-resistant" (ARS-4 gets >256GB with PractRand)
 ///
 /// [Random123]: http://www.deshawresearch.com/resources_random123.html
 pub struct Ars5 {

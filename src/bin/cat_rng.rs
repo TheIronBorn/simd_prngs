@@ -12,9 +12,9 @@
 //!
 //! `$ cat_rng | RNG_test stdin -multithreaded`
 //! NOTE: `stdin32` seems to be fastest, I'm not sure what sort of effect it
-//! might have on test strength.
-//!
-//! `-tlmin 256GB` might also be useful
+//! might have on test strength. `-tlmin 256GB` might also be useful.
+
+#![feature(exact_chunks)]
 
 extern crate packed_simd;
 extern crate rand;
@@ -40,11 +40,9 @@ fn fill_bytes_via_simd(rng: &mut SimdRng, dest: &mut Aligned<[u8; 64]>) {
     const CHUNK_SIZE: usize = Vec8::lanes();
     assert_eq!(dest.0.len() % CHUNK_SIZE, 0);
 
-    let mut read_len = 0;
-    for _ in 0..dest.0.len() / CHUNK_SIZE {
+    for chunk in dest.0.exact_chunks_mut(CHUNK_SIZE) {
         let mut results = Vec8::from_bits(rng.generate());
-        results.write_to_slice_aligned(&mut dest.0[read_len..read_len + CHUNK_SIZE]);
-        read_len += CHUNK_SIZE;
+        results.write_to_slice_aligned(chunk);
     }
 }
 

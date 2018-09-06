@@ -43,9 +43,9 @@ impl ChaCha4 {
         round!();
 
         for _round in 0..4 - 1 {
-            b = shuffle!(b, [1, 2, 3, 0]);
-            c = shuffle!(c, [2, 3, 0, 1]);
-            d = shuffle!(d, [3, 0, 1, 2]);
+            b = shuffle!(b, b, [1, 2, 3, 0]);
+            c = shuffle!(c, c, [2, 3, 0, 1]);
+            d = shuffle!(d, d, [3, 0, 1, 2]);
 
             round!();
         }
@@ -124,9 +124,9 @@ impl ChaChaA4 {
         round!();
 
         for _round in 0..4 - 1 {
-            b = shuffle!(b, [1, 2, 3, 0]);
-            c = shuffle!(c, [2, 3, 0, 1]);
-            d = shuffle!(d, [3, 0, 1, 2]);
+            b = shuffle!(b, b, [1, 2, 3, 0]);
+            c = shuffle!(c, c, [2, 3, 0, 1]);
+            d = shuffle!(d, d, [3, 0, 1, 2]);
 
             round!();
         }

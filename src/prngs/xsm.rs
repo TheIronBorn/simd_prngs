@@ -5,29 +5,29 @@ macro_rules! make_xsm32 {
         pub struct $rng_name {
             lcg_low: $vec,
             lcg_high: $vec,
-            lcg_adder: $vec,
-            history: $vec,
+            lcg_adder_low: $vec,
+            lcg_adder_high: $vec,
         }
 
         impl $rng_name {
             #[inline(always)]
             pub fn generate(&mut self) -> $vec {
-                const K: u32 = 0x6595a395;
-
-                let mut rv = self.history * 0x6595a395;
-                let mut tmp = self.lcg_high + rotate_left!(self.lcg_high ^ self.lcg_low, 11, $vec);
-                tmp *= K;
-
-                let mut old_lcg_low = self.lcg_low;
-                self.lcg_low += self.lcg_adder;
-                old_lcg_low -= $vec::from_bits(self.lcg_low.lt(self.lcg_adder)); // += (x < y) as usize
-                self.lcg_high += old_lcg_low;
-
-                rv ^= rv >> 16;
+                let mut tmp = self.lcg_high ^ rotate_left!(self.lcg_high + self.lcg_low, 9, $vec);
+                tmp ^= rotate_left!(tmp + self.lcg_adder_high, 19, $vec);
+                tmp *= 0xD251CF2D;
+                self.step_forwards();
+                tmp = tmp ^ rotate_left!(tmp + self.lcg_high, 16, $vec);
+                tmp *= 0x299529B5;
                 tmp ^= tmp >> 16;
-                self.history = tmp;
-                rv += self.history;
-                rv
+                tmp
+            }
+
+            fn step_forwards(&mut self) {
+                let tmp = self.lcg_low + self.lcg_adder_high;
+                self.lcg_low += self.lcg_adder_low;
+                let cmp = self.lcg_low.lt(self.lcg_adder_low);
+                // should compile to a single subtract instruction
+                self.lcg_high += tmp + cmp.select($vec::splat(1), $vec::splat(0));
             }
 
             /// There's little documentation so I'm unclear how best to
@@ -71,7 +71,7 @@ macro_rules! make_xsm32 {
                     }
                 }
 
-                let mut seeds = [0; 3];
+                /*let mut seeds = [0; 3];
                 rng.try_fill(&mut seeds)?;
 
                 let mut scalar = Xsm32 {
@@ -94,7 +94,9 @@ macro_rules! make_xsm32 {
                     lcg_adder = lcg_adder.replace(i, scalar.lcg_adder);
                 }
 
-                Ok(Self { lcg_low, lcg_high, lcg_adder, history: $vec::splat(0) })
+                Ok(Self { lcg_low, lcg_high, lcg_adder, history: $vec::splat(0) })*/
+
+                unimplemented!()
             }
         }
 
@@ -110,16 +112,12 @@ macro_rules! make_xsm32 {
                 let mut seeds = [$vec::default(); 3];
                 rng.try_fill(seeds.as_byte_slice_mut())?;
 
-                let mut xsm = Self {
-                    lcg_high: seeds[0] | 1,
-                    lcg_adder: seeds[1],
-                    lcg_low: seeds[2],
-                    history: $vec::splat(0),
-                };
+                let lcg_adder_low = seeds[0] | 1;
+                let lcg_adder_high = seeds[1];
+                let lcg_high = lcg_adder_high + (seeds[2] << 16);
+                let lcg_low = lcg_adder_low;
 
-                xsm.generate();
-
-                Ok(xsm)
+                Ok(Self{ lcg_adder_low, lcg_adder_high, lcg_high, lcg_low })
             }
         }
     };
@@ -139,27 +137,34 @@ macro_rules! make_xsm64 {
         pub struct $rng_name {
             lcg_low: $vec,
             lcg_high: $vec,
-            lcg_adder: $vec,
-            history: $vec,
+            lcg_adder_low: $vec,
+            lcg_adder_high: $vec,
         }
 
         impl $rng_name {
             #[inline(always)]
             pub fn generate(&mut self) -> $vec {
+                {}
+
                 const K: u64 = 0xA3EC647659359ACD;
 
-                self.history *= K;
-                let mut tmp = self.lcg_high + rotate_left!(self.lcg_high ^ self.lcg_low, 19, $vec);
+                let mut tmp = self.lcg_high ^ rotate_left!(self.lcg_high + self.lcg_low, 16, $vec);
+                tmp ^= rotate_left!(tmp + self.lcg_adder_high, 40, $vec);
                 tmp *= K;
-
-                let mut old = self.lcg_low;
-                self.lcg_low += self.lcg_adder;
-                self.lcg_high += old - $vec::from_bits(self.lcg_low.lt(self.lcg_adder));  // += (x < y) as usize
-
-                old = self.history ^ (self.history >> 32);
+                self.step_forwards();
+                tmp = tmp ^ rotate_left!(tmp + self.lcg_high, 32, $vec);
+                tmp *= K;
+                //tmp ^= tmp >> 16;
                 tmp ^= tmp >> 32;
-                self.history = tmp;
-                tmp + old
+                return tmp;
+            }
+
+            fn step_forwards(&mut self) {
+                let tmp = self.lcg_low + self.lcg_adder_high;
+                self.lcg_low += self.lcg_adder_low;
+                let cmp = self.lcg_low.lt(self.lcg_adder_low);
+                // should compile to a single subtract instruction
+                self.lcg_high += tmp + cmp.select($vec::splat(1), $vec::splat(0));
             }
 
             /*pub fn blocks_from_rng<R: RngCore>(mut rng: R) -> Result<Self, Error> {
@@ -227,17 +232,21 @@ macro_rules! make_xsm64 {
             }
 
             fn from_rng<R: RngCore>(mut rng: R) -> Result<Self, Error> {
-                let mut seeds = [$vec::default(); 2];
+                let mut seeds = [$vec::default(); 3];
                 rng.try_fill(seeds.as_byte_slice_mut())?;
 
-                let mut xsm = Self {
-                    lcg_high: seeds[0] | 1,
-                    lcg_adder: seeds[1],
-                    lcg_low: $vec::splat(0),
-                    history: $vec::splat(0),
-                };
+                let seed_low = seeds[0];
+                let seed_high = seeds[0];
 
-                xsm.generate();
+                let lcg_adder_low = (seed_low << 1) | 1;
+                let lcg_adder_high = (seed_low >> 63) | (seed_high << 1);//every bit of seed except the highest bit gets used in the adder
+
+                let lcg_low = lcg_adder_low;
+                let lcg_high = lcg_adder_high ^ ((seed_high >> 63) << 63);//and the highest bit of seed is used to determine which end of the cycle we start at
+                let mut xsm = Self { lcg_adder_low, lcg_adder_high, lcg_low, lcg_high };
+                xsm.step_forwards();
+
+                xsm.lcg_high += seeds[2] << 31;
 
                 Ok(xsm)
             }

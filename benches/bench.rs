@@ -1,12 +1,13 @@
-#![feature(stdsimd)]
 #![feature(test)]
+#![allow(unused_macros)]
 
 extern crate rand;
 extern crate simd_prngs;
+extern crate packed_simd;
 extern crate test;
 
 use std::mem::*;
-use std::simd::*;
+use packed_simd::*;
 
 use test::Bencher;
 
@@ -92,6 +93,94 @@ macro_rules! float {
     };
 }
 
+// uniform integer bounding using a widening multiply method
+macro_rules! wmul_int {
+    ($fnn:ident, $gen:ident, $uty:ident) => {
+        #[bench]
+        fn $fnn(b: &mut Bencher) {
+            const BITS: usize = size_of::<$uty>() * 8 / $uty::lanes();
+
+            let mut rng: $gen = $gen::from_rng(thread_rng()).unwrap();
+
+            let low = $uty::splat(0);
+            let high = $uty::splat((1 << (BITS - 1)) + 1);
+
+            let unsigned_max = !0;
+            let range: $uty = (high - low).cast();
+            let ints_to_reject = (unsigned_max - range + 1) % range;
+            let zone = unsigned_max - ints_to_reject;
+
+            b.iter(|| {
+                let mut accum = $uty::default();
+                for _ in 0..BENCH_N {
+                    let mut v: $uty = $uty::from_bits(rng.generate());
+                    let mut hi = $uty::default();
+                    for _ in 0..$uty::lanes().trailing_zeros() + 1 {
+                        let (hi_2, lo) = v.wmul(range);
+                        hi = hi_2;
+                        let cmp = lo.le(zone);
+                        let int_mask = unsafe { _mm_movemask_epi8(__m128i::from_bits(cmp)) };
+                        test::black_box(int_mask == u8::max_value() as i32);
+                        /*if mask.all()); {
+                            accum += low + hi;
+                            break;
+                        }*/
+                        v = cmp.select(v, $uty::from_bits(rng.generate()));
+                    }
+                    accum += low + hi;
+                }
+                accum
+            });
+            b.bytes = BENCH_N * size_of::<$uty>() as u64;
+        }
+    };
+}
+
+// uniform integer bounding using a bitmask method
+macro_rules! bitmask_int {
+    ($fnn:ident, $gen:ident, $uty:ident, $u_scalar:ty) => {
+        #[bench]
+        fn $fnn(b: &mut Bencher) {
+            const BITS: usize = size_of::<$uty>() * 8 / $uty::lanes();
+
+            let mut rng: $gen = $gen::from_rng(thread_rng()).unwrap();
+
+            let low: $u_scalar = 0;
+            let high = (1 << (BITS - 1)) + 1;
+
+            let mut range = high - low;
+            range -= 1;
+            let zeros = (range | 1).leading_zeros();
+            let mask = $uty::splat(!0 >> zeros);
+
+            b.iter(|| {
+                let mut accum = $uty::default();
+                for _ in 0..BENCH_N {
+                    let mut x = $uty::from_bits(rng.generate()) & mask;
+                    // reject x > range
+                    for _ in 0..$uty::lanes().trailing_zeros() + 1 {
+                        let cmp = x.le($uty::splat(range));
+                        let int_mask = unsafe { _mm_movemask_epi8(__m128i::from_bits(cmp)) };
+                        test::black_box(int_mask == u8::max_value() as i32);
+                        x = cmp.select(x, $uty::from_bits(rng.generate()) & mask);
+                    }
+                }
+                accum
+            });
+            b.bytes = BENCH_N * size_of::<$uty>() as u64;
+        }
+    };
+}
+
+// uniform integer bounding, for use-case benchmarking
+macro_rules! int {
+    ($wmul:ident, $bitmask:ident, $gen:ident, $uty:ident, $u_scalar:ty) => {
+        wmul_int!($wmul, $gen, $uty);
+        bitmask_int!($bitmask, $gen, $uty, $u_scalar);
+    };
+}
+
+// benchmark PRNG initialization
 macro_rules! init {
     ($fnn:ident, $gen:ident, $init:ident) => {
         #[bench]
@@ -105,6 +194,7 @@ macro_rules! init {
     };
 }
 
+// general benchmarking macro
 macro_rules! bench {
     ($generate:ident, $float:ident, $gen:ident, $uty:ident, $fty:ident) => {
         generate! { $generate, $gen, $uty }
