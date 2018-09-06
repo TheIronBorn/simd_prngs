@@ -21,8 +21,8 @@ extern crate rand;
 extern crate simd_prngs;
 
 use packed_simd::*;
-use std::io::{self, BufWriter};
 use std::io::prelude::*;
+use std::io::{self, BufWriter};
 
 use rand::FromEntropy;
 use simd_prngs::*;

@@ -47,8 +47,10 @@ macro_rules! make_xoshiro {
                     //       per the paper http://vigna.di.unimi.it/ftp/papers/ScrambledLinear.pdf
                     fn jump(&mut self) {
                         const JUMP: [u64; 4] = [
-                            0x180ec6d33cfd0aba, 0xd5a61266f0c9392c,
-                            0xa9582618e03fc9aa, 0x39abdc4529b1661c,
+                            0x180ec6d33cfd0aba,
+                            0xd5a61266f0c9392c,
+                            0xa9582618e03fc9aa,
+                            0x39abdc4529b1661c,
                         ];
 
                         let mut s0 = 0;
@@ -235,6 +237,7 @@ macro_rules! make_xoshiro512 {
     };
 }
 
+#[cfg_attr(rustfmt, rustfmt_skip)]
 // (where `l` is stream length)
 // (multiple parameters could be used, though slow on older hardware)
 // (jumping is possible)

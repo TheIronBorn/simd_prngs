@@ -57,6 +57,7 @@ macro_rules! make_lcg {
     };
 }
 
+#[cfg_attr(rustfmt, rustfmt_skip)]
 // (where `l` is stream length)
 // (multiple parameters could be used)
 // Listing probability of overlap somewhere:                            Probability

@@ -44,16 +44,16 @@ macro_rules! make_lfsr113 {
 
                 // could perhaps use the seeding of ISPC
                 while seed[0].le($vector::splat(1)).any() {
-                    rng.try_fill(seed[0..0 + 1].as_byte_slice_mut())?;
+                    rng.try_fill(seed[0..=0].as_byte_slice_mut())?;
                 }
                 while seed[1].le($vector::splat(7)).any() {
-                    rng.try_fill(seed[1..1 + 1].as_byte_slice_mut())?;
+                    rng.try_fill(seed[1..=1].as_byte_slice_mut())?;
                 }
                 while seed[2].le($vector::splat(15)).any() {
-                    rng.try_fill(seed[2..2 + 1].as_byte_slice_mut())?;
+                    rng.try_fill(seed[2..=2].as_byte_slice_mut())?;
                 }
                 while seed[3].le($vector::splat(127)).any() {
-                    rng.try_fill(seed[3..3 + 1].as_byte_slice_mut())?;
+                    rng.try_fill(seed[3..=3].as_byte_slice_mut())?;
                 }
 
                 Ok(Self {
@@ -119,19 +119,19 @@ macro_rules! make_lfsr258 {
                 rng.try_fill(seed.as_byte_slice_mut())?;
 
                 while seed[0].le($vector::splat(1)).any() {
-                    rng.try_fill(seed[0..0 + 1].as_byte_slice_mut())?;
+                    rng.try_fill(seed[0..=0].as_byte_slice_mut())?;
                 }
                 while seed[1].le($vector::splat(511)).any() {
-                    rng.try_fill(seed[1..1 + 1].as_byte_slice_mut())?;
+                    rng.try_fill(seed[1..=1].as_byte_slice_mut())?;
                 }
                 while seed[2].le($vector::splat(4095)).any() {
-                    rng.try_fill(seed[2..2 + 1].as_byte_slice_mut())?;
+                    rng.try_fill(seed[2..=2].as_byte_slice_mut())?;
                 }
                 while seed[3].le($vector::splat(131071)).any() {
-                    rng.try_fill(seed[3..3 + 1].as_byte_slice_mut())?;
+                    rng.try_fill(seed[3..=3].as_byte_slice_mut())?;
                 }
                 while seed[4].le($vector::splat(8388607)).any() {
-                    rng.try_fill(seed[4..4 + 1].as_byte_slice_mut())?;
+                    rng.try_fill(seed[4..=4].as_byte_slice_mut())?;
                 }
 
                 Ok(Self {

@@ -12,6 +12,7 @@
 
 use rng_impl::*;
 
+#[cfg_attr(rustfmt, rustfmt_skip)]
 macro_rules! sfc_alt_a {
     (
         $rng_name:ident,
@@ -171,6 +172,7 @@ macro_rules! sfc_alt_f {
     };
 }
 
+#[cfg_attr(rustfmt, rustfmt_skip)]
 macro_rules! sfc_alt_g {
     (
         $rng_name:ident,
@@ -197,6 +199,7 @@ macro_rules! sfc_alt_g {
     };
 }
 
+#[cfg_attr(rustfmt, rustfmt_skip)]
 macro_rules! sfc_alt_h {
     (
         $rng_name:ident,
@@ -263,7 +266,8 @@ macro_rules! sfc_alt_j {
         impl $rng_name {
             #[inline(always)]
             pub fn generate(&mut self) -> $vector {
-                // Some rotates here are larger than 8, which means this won't work for 8-bit Sfc
+                // Some rotates here are larger than 8, which means this won't
+                // work for 8-bit Sfc
 
                 self.a += rotate_left!(self.a, 7, $vector);
                 self.b = rotate_left!(self.b, 13, $vector) + self.b + (self.b << 3);
@@ -274,6 +278,7 @@ macro_rules! sfc_alt_j {
     };
 }
 
+#[cfg_attr(rustfmt, rustfmt_skip)]
 macro_rules! sfc_alt_k {
     (
         $rng_name:ident,
@@ -291,7 +296,6 @@ macro_rules! sfc_alt_k {
                 // My testing puts it at >512GB (64-bit version)
 
                 //VERY good speed, 16 bit version failed @ 256 GB (2 GB w/o counter), 32 bit @ ?
-                // enum { SHIFT = (OUTPUT_BITS == 64) ? 43 : ((OUTPUT_BITS == 32) ? 23 : ((OUTPUT_BITS == 16) ? 11 : -1)) };//43, 11, 9
                 self.a += self.b; self.b -= self.c;
                 self.c += self.a; self.a ^= self.counter;
                 self.counter += 1;
@@ -300,34 +304,31 @@ macro_rules! sfc_alt_k {
                 // This variant seems to be missing a line like the `l` variant:
                 // `self.b += self.b << $e_sh2;`
 
-                //w/ counter    32:29->24, 28->37?, 27->36      16:14->22, 13->23, 12->32, 11->37, 10->37, 9->30, 8->19, 7->30, 6->38, 5->38, 4->29, 3->19, 2->18
-                //w/o counter   32:29->  , 28->  , 27->         16:14->17, 13->19, 12->26, 11->30, 10->31, 9->31, 8->17, 7->31, 6->31, 5->31, 4->30, 3->19, 2->17
                 self.a
             }
         }
     };
 }
 
+#[cfg_attr(rustfmt, rustfmt_skip)]
 macro_rules! sfc_alt_l {
-    ($rng_name:ident, $vector:ident, constants: $sh1:expr, $sh2:expr, $sh3:expr, e1: $e_sh:expr, e2: $e_sh1:expr, $e_sh2:expr) => (
+    ($rng_name:ident, $vector:ident, constants: $sh1:expr, $sh2:expr, $sh3:expr, e1: $e_sh:expr, e2: $e_sh1:expr, $e_sh2:expr) => {
         impl $rng_name {
             #[inline(always)]
             pub fn generate(&mut self) -> $vector {
                 //VERY good speed, 16 bit version failed @ 16 TB (1 TB w/o counter), 32 bit @ > 4 TB w/o counter
-                // enum { SH1 = (OUTPUT_BITS == 64) ? 48 : ((OUTPUT_BITS == 32) ? 14 : ((OUTPUT_BITS == 16) ? 9 : ((OUTPUT_BITS == 8) ? 5 : -1))) };
-                // enum { SH2 = (OUTPUT_BITS == 64) ? 3 : ((OUTPUT_BITS == 32) ? 3 : ((OUTPUT_BITS == 16) ? 3 : ((OUTPUT_BITS == 8) ? 2 : -1))) };// using LEA on x86
                 self.a += self.b; self.b -= self.c;
                 self.c += self.a; self.a ^= self.counter;
                 self.counter += 1;
                 // with 64-bit, `$e_sh1` is 48 which is divisible by 8. We could
                 // then implement this rotate with a vector shuffle (might be
                 // faster on older hardware)
-                self.c = rotate_left!(self.c, $e_sh1, $vector);//cb  with count: ?, 14, 9, ?  ; w/o count: 16, 8, 9, ?
-                self.b += self.b << $e_sh2;//ba
+                self.c = rotate_left!(self.c, $e_sh1, $vector); //cb  with count: ?, 14, 9, ?  ; w/o count: 16, 8, 9, ?
+                self.b += self.b << $e_sh2; //ba
                 self.a
             }
         }
-    )
+    };
 }
 
 macro_rules! make_sfc {

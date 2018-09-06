@@ -53,6 +53,7 @@ macro_rules! make_xorshift128plus {
     };
 }
 
+#[cfg_attr(rustfmt, rustfmt_skip)]
 // (where `l` is stream length)
 // (multiple parameters could be used, though slow on older hardware)
 // (jumping is possible)

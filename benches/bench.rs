@@ -1,13 +1,13 @@
 #![feature(test)]
 #![allow(unused_macros)]
 
+extern crate packed_simd;
 extern crate rand;
 extern crate simd_prngs;
-extern crate packed_simd;
 extern crate test;
 
-use std::mem::*;
 use packed_simd::*;
+use std::mem::*;
 
 use test::Bencher;
 
@@ -121,10 +121,6 @@ macro_rules! wmul_int {
                         let cmp = lo.le(zone);
                         let int_mask = unsafe { _mm_movemask_epi8(__m128i::from_bits(cmp)) };
                         test::black_box(int_mask == u8::max_value() as i32);
-                        /*if mask.all()); {
-                            accum += low + hi;
-                            break;
-                        }*/
                         v = cmp.select(v, $uty::from_bits(rng.generate()));
                     }
                     accum += low + hi;

@@ -7,7 +7,10 @@
 //! $ RUSTFLAGS='-C target-cpu=native' cargo bench
 //! ```
 
-#![cfg_attr(feature = "cargo-clippy", allow(unreadable_literal, reverse_range_loop, cast_lossless))]
+#![cfg_attr(
+    feature = "cargo-clippy",
+    allow(unreadable_literal, reverse_range_loop, cast_lossless)
+)]
 
 extern crate packed_simd;
 extern crate rand;

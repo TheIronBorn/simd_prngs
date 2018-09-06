@@ -43,24 +43,22 @@ macro_rules! make_jsf {
 
                 // PractRand: block the cycles of length 1
                 let cmp = eq(d & 0x80093300, 0);
+                // works like `d += if true { 1 } else { 0 }`
                 d += 1 & $vector::from_bits(cmp & ne(a, 0) & ne(b, 0) & ne(c, 0) & ne(d, 0));
                 d += 1 & $vector::from_bits(
-                    cmp
-                        & eq(a, 0x77777777)
+                    cmp & eq(a, 0x77777777)
                         & eq(b, 0x55555555)
                         & eq(c, 0x11111111)
                         & eq(d, 0x44444444),
                 );
                 d += 1 & $vector::from_bits(
-                    cmp
-                        & eq(a, 0x5591F2E3)
+                    cmp & eq(a, 0x5591F2E3)
                         & eq(b, 0x69EBA6CD)
                         & eq(c, 0x2A171E3D)
                         & eq(d, 0x3FD48890),
                 );
                 d += 1 & $vector::from_bits(
-                    cmp
-                        & eq(a, 0x47CB8D56)
+                    cmp & eq(a, 0x47CB8D56)
                         & eq(b, 0xAE9B35A7)
                         & eq(c, 0x5C78F4A8)
                         & eq(d, 0x522240FF),

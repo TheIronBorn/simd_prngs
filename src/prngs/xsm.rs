@@ -1,3 +1,6 @@
+#![cfg_attr(rustfmt, rustfmt_skip)]
+#![allow(unused_variables, dead_code, unused_mut)]
+
 use rng_impl::*;
 
 macro_rules! make_xsm32 {
@@ -49,7 +52,9 @@ macro_rules! make_xsm32 {
                                     val = val.wrapping_mul(mul).wrapping_add(add);
                                 }
                                 how_far >>= 1;
-                                if how_far == 0 { break; }
+                                if how_far == 0 {
+                                    break;
+                                }
                                 add = add.wrapping_mul(mul).wrapping_add(add);
                                 mul = mul.wrapping_mul(mul);
                             }
@@ -66,7 +71,8 @@ macro_rules! make_xsm32 {
                         // xsm.generate();
                         let mut old_lcg_low = self.lcg_low;
                         self.lcg_low = self.lcg_low.wrapping_add(self.lcg_adder);
-                        old_lcg_low = old_lcg_low.wrapping_add((self.lcg_low < self.lcg_adder) as u32);
+                        old_lcg_low =
+                            old_lcg_low.wrapping_add((self.lcg_low < self.lcg_adder) as u32);
                         self.lcg_high = self.lcg_high.wrapping_add(old_lcg_low);
                     }
                 }
@@ -117,7 +123,12 @@ macro_rules! make_xsm32 {
                 let lcg_high = lcg_adder_high + (seeds[2] << 16);
                 let lcg_low = lcg_adder_low;
 
-                Ok(Self{ lcg_adder_low, lcg_adder_high, lcg_high, lcg_low })
+                Ok(Self {
+                    lcg_adder_low,
+                    lcg_adder_high,
+                    lcg_high,
+                    lcg_low,
+                })
             }
         }
     };
@@ -239,11 +250,16 @@ macro_rules! make_xsm64 {
                 let seed_high = seeds[0];
 
                 let lcg_adder_low = (seed_low << 1) | 1;
-                let lcg_adder_high = (seed_low >> 63) | (seed_high << 1);//every bit of seed except the highest bit gets used in the adder
+                let lcg_adder_high = (seed_low >> 63) | (seed_high << 1); //every bit of seed except the highest bit gets used in the adder
 
                 let lcg_low = lcg_adder_low;
-                let lcg_high = lcg_adder_high ^ ((seed_high >> 63) << 63);//and the highest bit of seed is used to determine which end of the cycle we start at
-                let mut xsm = Self { lcg_adder_low, lcg_adder_high, lcg_low, lcg_high };
+                let lcg_high = lcg_adder_high ^ ((seed_high >> 63) << 63); //and the highest bit of seed is used to determine which end of the cycle we start at
+                let mut xsm = Self {
+                    lcg_adder_low,
+                    lcg_adder_high,
+                    lcg_low,
+                    lcg_high,
+                };
                 xsm.step_forwards();
 
                 xsm.lcg_high += seeds[2] << 31;

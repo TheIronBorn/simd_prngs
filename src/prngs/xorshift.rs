@@ -82,11 +82,12 @@ macro_rules! make_xorshift128 {
                 const ZERO: $vector = $vector::splat(0);
 
                 let mut seeds = [$vector::default(); 4];
+                // while any lane has all zero seeds
                 while seeds
                     .iter()
                     // `splat(true)`
                     .fold(ZERO.eq(ZERO), |acc, s| acc & s.eq(&ZERO))
-                    .any() // any lane has all zero seeds
+                    .any()
                 {
                     rng.try_fill(seeds.as_byte_slice_mut())?;
                 }

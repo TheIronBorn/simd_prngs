@@ -30,6 +30,7 @@ impl ChaCha4 {
         let mut c = self.c;
         let mut d = self.d;
 
+        #[cfg_attr(rustfmt, rustfmt_skip)]
         macro_rules! round {
             () => {{
                 a += b; d ^= a; d = rotate_left!(d, 16, u32x4);
@@ -60,6 +61,7 @@ impl ChaCha4 {
 
         let ab: u32x8 = shuffle!(a, b, [0, 1, 2, 3, 4, 5, 6, 7]);
         let cd: u32x8 = shuffle!(c, d, [0, 1, 2, 3, 4, 5, 6, 7]);
+        #[cfg_attr(rustfmt, rustfmt_skip)]
         shuffle!(ab, cd, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15])
     }
 }
@@ -111,6 +113,7 @@ impl ChaChaA4 {
         let mut c = self.c;
         let mut d = self.d;
 
+        #[cfg_attr(rustfmt, rustfmt_skip)]
         macro_rules! round {
             () => {{
                 a += b; d ^= a; d = rotate_left!(d, 16, u32x4);
@@ -141,6 +144,7 @@ impl ChaChaA4 {
 
         let ab: u32x8 = shuffle!(a, b, [0, 1, 2, 3, 4, 5, 6, 7]);
         let cd: u32x8 = shuffle!(c, d, [0, 1, 2, 3, 4, 5, 6, 7]);
+        #[cfg_attr(rustfmt, rustfmt_skip)]
         shuffle!(ab, cd, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15])
     }
 }

@@ -37,7 +37,8 @@ impl Mwc8 {
         y += x >> 32; // add old carry
         self.buffer[self.idx as usize] = y; // new x and carry
 
-        // The uppermost bits of the carry are not sufficiently random. Randomize some more for output
+        // The uppermost bits of the carry are not sufficiently random. Randomize some
+        // more for output
         y ^= y << 30; // output function
         y ^= y >> 35;
         y ^= y << 13;
@@ -90,7 +91,8 @@ impl Mwc2 {
         y += self.state >> 32; // add old carry
         self.state = y; // new x and carry
 
-        // The uppermost bits of the carry are not sufficiently random. Randomize some more for output
+        // The uppermost bits of the carry are not sufficiently random. Randomize some
+        // more for output
         y ^= y << 30; // output function
         y ^= y >> 35;
         y ^= y << 13;
@@ -146,7 +148,8 @@ impl Mwc4 {
         y += x >> 32; // add old carry
         self.buffer[self.idx as usize] = y; // new x and carry
 
-        // The uppermost bits of the carry are not sufficiently random. Randomize some more for output
+        // The uppermost bits of the carry are not sufficiently random. Randomize some
+        // more for output
         y ^= y << 30; // output function
         y ^= y >> 35;
         y ^= y << 13;
