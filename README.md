@@ -25,7 +25,11 @@ Note: not all implementations of PRNGs are verified to be correct.
 - `Xsm32`, `Xsm64`: A small random-access PRNG designed by Chris Doty-Humphrey
 - `ChaCha4`: A stream cipher designed by Daniel J. Bernstein. We reduce the rounds to 4 for a faster non-cryptographic version.
 
+**To be added:**
+- [`AESRand`](https://github.com/dragontamer/AESRand): A counter-based invertible PRNG using AES-NI instructions by @dragontamer. VERY fast, \~0.12 cycles per byte.
+
 Most of the PRNGs are parallelized scalar PRNGs. For most of those, variants with all vector lanes available with [`stdsimd`](https://github.com/rust-lang-nursery/stdsimd) are provided.
+
 
 ## Currently implemented stream features
 - `Xoroshiro`: equally-spaced blocks via Xoroshiro's jumping features, `blocks_from_rng`
