@@ -17,14 +17,18 @@ macro_rules! make_sfc_simd {
             counter: $vector,
         }
 
-        impl $rng_name {
+        impl_rngcore! { $rng_name }
+
+        impl SimdRng for $rng_name {
+            type Result = $vector;
+
             #[inline(always)]
-            pub fn generate(&mut self) -> $vector {
+            fn generate(&mut self) -> $vector {
                 let tmp = self.a + self.b + self.counter;
                 self.counter += 1;
                 self.a = self.b ^ (self.b >> $shr);
                 self.b = self.c + (self.c << $shl);
-                self.c = rotate_left!(self.c, $rot, $vector) + tmp;
+                self.c = self.c.rotate_left_opt($rot) + tmp;
                 tmp
             }
         }
@@ -33,12 +37,12 @@ macro_rules! make_sfc_simd {
             type Seed = [u8; 0];
 
             fn from_seed(_seed: Self::Seed) -> Self {
-                unimplemented!();
+                unimplemented!("`SeedableRng::from_seed` is unimplemented for some PRNG families")
             }
 
-            fn from_rng<R: RngCore>(mut rng: R) -> Result<Self, Error> {
+            fn from_rng<R: Rng>(mut rng: R) -> Result<Self, Error> {
                 let mut seed = [$vector::default(); 3];
-                rng.try_fill(seed.as_byte_slice_mut())?;
+                rng.try_fill_bytes(seed.as_byte_slice_mut())?;
 
                 Ok(Self {
                     a: seed[0],
@@ -64,19 +68,19 @@ macro_rules! make_sfc_simd {
 // (where `l` is stream length)
 // (multiple parameters could be used, though slow on older hardware)
 // (some counter-based techniques could be adapted)
-// Listing probability of overlap somewhere:                     Probability
+#[rustfmt::skip]
+// Listing probability of overlap somewhere:                       Probability
+make_sfc_simd! { 64bit: Sfc64x2,  u64x2  } // ≈ 2^2  * l / 2^255 ≈ l * 2^-253
+make_sfc_simd! { 64bit: Sfc64x4,  u64x4  } // ≈ 4^2  * l / 2^255 ≈ l * 2^-251
+make_sfc_simd! { 64bit: Sfc64x8,  u64x8  } // ≈ 8^2  * l / 2^255 ≈ l * 2^-249
 
-make_sfc_simd! { 64bit: Sfc64x2, u64x2 } // 2^2 * l / 2^255 ≈    l * 2^-253
-make_sfc_simd! { 64bit: Sfc64x4, u64x4 } // 4^2 * l / 2^255 ≈    l * 2^-251
-make_sfc_simd! { 64bit: Sfc64x8, u64x8 } // 8^2 * l / 2^255 ≈    l * 2^-249
+make_sfc_simd! { 32bit: Sfc32x2,  u32x2  } // ≈ 2^2  * l / 2^128 ≈ l * 2^-126
+make_sfc_simd! { 32bit: Sfc32x4,  u32x4  } // ≈ 4^2  * l / 2^128 ≈ l * 2^-124
+make_sfc_simd! { 32bit: Sfc32x8,  u32x8  } // ≈ 8^2  * l / 2^128 ≈ l * 2^-122
+make_sfc_simd! { 32bit: Sfc32x16, u32x16 } // ≈ 16^2 * l / 2^128 ≈ l * 2^-120
 
-make_sfc_simd! { 32bit: Sfc32x2, u32x2 } // 2^2 * l / 2^128 ≈    l * 2^-126
-make_sfc_simd! { 32bit: Sfc32x4, u32x4 } // 4^2 * l / 2^128 ≈    l * 2^-124
-make_sfc_simd! { 32bit: Sfc32x8, u32x8 } // 8^2 * l / 2^128 ≈    l * 2^-122
-make_sfc_simd! { 32bit: Sfc32x16, u32x16 } // 16^2 * l / 2^128 ≈ l * 2^-120
-
-make_sfc_simd! { 16bit: Sfc16x2, u16x2 } // 2^2 * l / 2^63 ≈     l * 2^-61
-make_sfc_simd! { 16bit: Sfc16x4, u16x4 } // 4^2 * l / 2^63 ≈     l * 2^-59
-make_sfc_simd! { 16bit: Sfc16x8, u16x8 } // 8^2 * l / 2^63 ≈     l * 2^-57
-make_sfc_simd! { 16bit: Sfc16x16, u16x16 } // 16^2 * l / 2^63 ≈  l * 2^-55
-make_sfc_simd! { 16bit: Sfc16x32, u16x32 } // 32^2 * l / 2^63 ≈  l * 2^-52
+make_sfc_simd! { 16bit: Sfc16x2,  u16x2  } // ≈ 2^2  * l / 2^63  ≈ l * 2^-61
+make_sfc_simd! { 16bit: Sfc16x4,  u16x4  } // ≈ 4^2  * l / 2^63  ≈ l * 2^-59
+make_sfc_simd! { 16bit: Sfc16x8,  u16x8  } // ≈ 8^2  * l / 2^63  ≈ l * 2^-57
+make_sfc_simd! { 16bit: Sfc16x16, u16x16 } // ≈ 16^2 * l / 2^63  ≈ l * 2^-55
+make_sfc_simd! { 16bit: Sfc16x32, u16x32 } // ≈ 32^2 * l / 2^63  ≈ l * 2^-52

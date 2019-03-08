@@ -1,3 +1,4 @@
+use rand::AsByteSliceMut as RandAsByteSliceMut;
 use rng_impl::*;
 
 macro_rules! make_xoroshiro {
@@ -7,29 +8,36 @@ macro_rules! make_xoroshiro {
             s1: $vector,
         }
 
-        impl $rng_name {
+        impl SimdRng for $rng_name {
+            type Result = $vector;
+
             #[inline(always)]
-            pub fn generate(&mut self) -> $vector {
+            fn generate(&mut self) -> $vector {
                 let s0 = self.s0;
                 let mut s1 = self.s1;
                 // The `++` scrambler might be faster (multiplication,
-                // particularly 64-bit, is slow with SIMD).
+                // particularly 64-bit, is slow with SIMD. The multiplications could be replaced
+                // with a series of shifts and additions but LLVM currently prefers
+                // multiplication).
                 //
                 // The paper suggests the rotate could be replaced by
                 // `x ^= x >> rot`. Perhaps even a single byte vector shuffle?
                 // (only a one bit difference)
-                let result = rotate_left!(s0 * 5, 7, $vector) * 9;
+                let result = (s0 * 5).rotate_left_opt(7) * 9;
 
                 s1 ^= s0;
-                // this rotate could be implemented as a shuffle (as it is
-                // divisible by 8)
-                self.s0 = rotate_left!(s0, 24, $vector) ^ s1 ^ (s1 << 16); // a, b
-                self.s1 = rotate_left!(s1, 37, $vector); // c
+                // this rotate could be implemented as a shuffle (as it is divisible by 8)
+                self.s0 = s0.rotate_left_opt(24) ^ s1 ^ (s1 << 16); // a, b
+                self.s1 = s1.rotate_left_opt(37); // c
 
                 result
             }
+        }
 
-            pub fn blocks_from_rng<R: RngCore>(mut rng: R) -> Result<Self, Error> {
+        impl_rngcore! { $rng_name }
+
+        impl $rng_name {
+            pub fn blocks_from_rng<R: Rng>(mut rng: R) -> Result<Self, Error> {
                 struct Xoroshiro128 {
                     s0: u64,
                     s1: u64,
@@ -63,9 +71,9 @@ macro_rules! make_xoroshiro {
                     }
                 }
 
-                let mut seed = [0; 2];
+                let mut seed = [0_u64; 2];
                 while seed.iter().all(|&x| x == 0) {
-                    rng.try_fill(&mut seed)?;
+                    rng.try_fill_bytes(seed.as_byte_slice_mut())?;
                 }
 
                 let mut scalar = Xoroshiro128 {
@@ -93,22 +101,19 @@ macro_rules! make_xoroshiro {
         impl SeedableRng for $rng_name {
             type Seed = [u8; 0];
 
-            #[inline(always)]
             fn from_seed(_seed: Self::Seed) -> Self {
-                unimplemented!()
+                unimplemented!("`SeedableRng::from_seed` is unimplemented for some PRNG families")
             }
 
-            fn from_rng<R: RngCore>(mut rng: R) -> Result<Self, Error> {
-                const ZERO: $vector = $vector::splat(0);
-
+            fn from_rng<R: Rng>(mut rng: R) -> Result<Self, Error> {
                 let mut seeds = [$vector::default(); 2];
                 while seeds
                     .iter()
-                    // `splat(true)`
-                    .fold(ZERO.eq(ZERO), |acc, s| acc & s.eq(&ZERO))
+                    .fold($vector::splat(0), |mask, &s| mask | s)
+                    .eq($vector::splat(0))
                     .any()
                 {
-                    rng.try_fill(seeds.as_byte_slice_mut())?;
+                    rng.try_fill_bytes(seeds.as_byte_slice_mut())?;
                 }
 
                 Ok(Self {
@@ -123,7 +128,8 @@ macro_rules! make_xoroshiro {
 // (where `l` is stream length)
 // (multiple parameters could be used, though slow on older hardware)
 // (jumping is possible)
-// Listing probability of overlap somewhere:               Probability
-make_xoroshiro! { Xoroshiro128StarStarX2, u64x2 } // 2^2 * l / 2^128 ≈ l * 2^-126
-make_xoroshiro! { Xoroshiro128StarStarX4, u64x4 } // 4^2 * l / 2^128 ≈ l * 2^-124
-make_xoroshiro! { Xoroshiro128StarStarX8, u64x8 } // 8^2 * l / 2^128 ≈ l * 2^-122
+#[rustfmt::skip]
+// Listing probability of overlap somewhere:                             Probability
+make_xoroshiro! { Xoroshiro128StarStarX2, u64x2 } // ≈ 2^2 * l / 2^128 ≈ l * 2^-126
+make_xoroshiro! { Xoroshiro128StarStarX4, u64x4 } // ≈ 4^2 * l / 2^128 ≈ l * 2^-124
+make_xoroshiro! { Xoroshiro128StarStarX8, u64x8 } // ≈ 8^2 * l / 2^128 ≈ l * 2^-122

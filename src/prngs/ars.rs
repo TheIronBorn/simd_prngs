@@ -8,7 +8,7 @@ use std::arch::x86_64::*;
 
 use rng_impl::*;
 
-#[inline]
+#[inline(always)]
 fn aes_enc(x: u64x2, k: u64x2) -> u64x2 {
     let x = __m128i::from_bits(x);
     let k = __m128i::from_bits(k);
@@ -17,7 +17,7 @@ fn aes_enc(x: u64x2, k: u64x2) -> u64x2 {
     u64x2::from_bits(r)
 }
 
-#[inline]
+#[inline(always)]
 fn aes_enc_last(x: u64x2, k: u64x2) -> u64x2 {
     let x = __m128i::from_bits(x);
     let k = __m128i::from_bits(k);
@@ -43,9 +43,11 @@ pub struct Ars5 {
     key: u64x2,
 }
 
-impl Ars5 {
+impl SimdRng for Ars5 {
+    type Result = u64x2;
+
     #[inline(always)]
-    pub fn generate(&mut self) -> u64x2 {
+    fn generate(&mut self) -> u64x2 {
         let mut kk = self.key;
         let mut v = self.input ^ kk;
 
@@ -65,22 +67,18 @@ impl Ars5 {
     }
 }
 
+impl_rngcore! { Ars5 }
+
 impl SeedableRng for Ars5 {
-    type Seed = [u8; 0];
+    type Seed = [u8; 32];
 
-    #[inline(always)]
-    fn from_seed(_seed: Self::Seed) -> Self {
-        unimplemented!()
-    }
+    fn from_seed(seed: Self::Seed) -> Self {
+        let load = |x| u64x2::from_bits(u8x16::from_slice_unaligned(x));
 
-    fn from_rng<R: RngCore>(mut rng: R) -> Result<Self, Error> {
-        let mut seed_u64 = [u64x2::default(); 2];
-        rng.try_fill(seed_u64.as_byte_slice_mut())?;
-
-        Ok(Self {
-            input: seed_u64[0],
-            key: seed_u64[1],
-        })
+        Self {
+            input: load(&seed[..16]),
+            key: load(&seed[16..]),
+        }
     }
 }
 
@@ -94,9 +92,11 @@ pub struct Ars7 {
     key: u64x2,
 }
 
-impl Ars7 {
+impl SimdRng for Ars7 {
+    type Result = u64x2;
+
     #[inline(always)]
-    pub fn generate(&mut self) -> u64x2 {
+    fn generate(&mut self) -> u64x2 {
         let mut kk = self.key;
         let mut v = self.input ^ kk;
 
@@ -116,21 +116,17 @@ impl Ars7 {
     }
 }
 
+impl_rngcore! { Ars7 }
+
 impl SeedableRng for Ars7 {
-    type Seed = [u8; 0];
+    type Seed = [u8; 32];
 
-    #[inline(always)]
-    fn from_seed(_seed: Self::Seed) -> Self {
-        unimplemented!()
-    }
+    fn from_seed(seed: Self::Seed) -> Self {
+        let load = |x| u64x2::from_bits(u8x16::from_slice_unaligned(x));
 
-    fn from_rng<R: RngCore>(mut rng: R) -> Result<Self, Error> {
-        let mut seed_u64 = [u64x2::default(); 2];
-        rng.try_fill(seed_u64.as_byte_slice_mut())?;
-
-        Ok(Self {
-            input: seed_u64[0],
-            key: seed_u64[1],
-        })
+        Self {
+            input: load(&seed[..16]),
+            key: load(&seed[16..]),
+        }
     }
 }

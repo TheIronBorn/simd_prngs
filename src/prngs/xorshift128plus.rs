@@ -7,9 +7,13 @@ macro_rules! make_xorshift128plus {
             s1: $vector,
         }
 
-        impl $rng_name {
+        impl_rngcore! { $rng_name }
+
+        impl SimdRng for $rng_name {
+            type Result = $vector;
+
             #[inline(always)]
-            pub fn generate(&mut self) -> $vector {
+            fn generate(&mut self) -> $vector {
                 let mut s1 = self.s0;
                 let s0 = self.s1;
                 // replacing this scrambler with one from the "Scrambled Linear
@@ -26,22 +30,19 @@ macro_rules! make_xorshift128plus {
         impl SeedableRng for $rng_name {
             type Seed = [u8; 0];
 
-            #[inline(always)]
             fn from_seed(_seed: Self::Seed) -> Self {
-                unimplemented!()
+                unimplemented!("`SeedableRng::from_seed` is unimplemented for some PRNG families")
             }
 
-            fn from_rng<R: RngCore>(mut rng: R) -> Result<Self, Error> {
-                const ZERO: $vector = $vector::splat(0);
-
+            fn from_rng<R: Rng>(mut rng: R) -> Result<Self, Error> {
                 let mut seeds = [$vector::default(); 2];
                 while seeds
                     .iter()
-                    // `splat(true)`
-                    .fold(ZERO.eq(ZERO), |acc, s| acc & s.eq(&ZERO))
+                    .fold($vector::splat(0), |mask, &s| mask | s)
+                    .eq($vector::splat(0))
                     .any()
                 {
-                    rng.try_fill(seeds.as_byte_slice_mut())?;
+                    rng.try_fill_bytes(seeds.as_byte_slice_mut())?;
                 }
 
                 Ok(Self {
@@ -53,11 +54,11 @@ macro_rules! make_xorshift128plus {
     };
 }
 
-#[cfg_attr(rustfmt, rustfmt_skip)]
 // (where `l` is stream length)
 // (multiple parameters could be used, though slow on older hardware)
 // (jumping is possible)
-// Listing probability of overlap somewhere:                            Probability
-make_xorshift128plus! { Xorshift128PlusX2, u64x2 } // 2^2 * l / 2^128 ≈ l * 2^-126
-make_xorshift128plus! { Xorshift128PlusX4, u64x4 } // 4^2 * l / 2^128 ≈ l * 2^-124
-make_xorshift128plus! { Xorshift128PlusX8, u64x8 } // 8^2 * l / 2^128 ≈ l * 2^-122
+#[rustfmt::skip]
+// Listing probability of overlap somewhere:                              Probability
+make_xorshift128plus! { Xorshift128PlusX2, u64x2 } // ≈ 2^2 * l / 2^128 ≈ l * 2^-126
+make_xorshift128plus! { Xorshift128PlusX4, u64x4 } // ≈ 4^2 * l / 2^128 ≈ l * 2^-124
+make_xorshift128plus! { Xorshift128PlusX8, u64x8 } // ≈ 8^2 * l / 2^128 ≈ l * 2^-122

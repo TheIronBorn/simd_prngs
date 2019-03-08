@@ -1,5 +1,4 @@
-simd-prngs
-====
+# simd-prngs
 
 A crate researching various SIMD PRNGs.
 You need nightly Rust and SIMD capable hardware to use this crate.
@@ -8,15 +7,17 @@ To use it, run:
 $ RUSTFLAGS='-C target-cpu=native' cargo bench
 ```
 
-Also provided is a utility for printing a PRNG's output to stdout for use with testing utilities like [PractRand](http://pracrand.sourceforge.net/): `src/bin/cat_rng.rs`.
+NOTE: `target-cpu=native` may not properly use AES instructions. You may need to add `-C target-feature=+aes`.
 
-Note: not all implementations of PRNGs are verified to be correct.
+Also provided is a utility ([`bin/cat_rng.rs`](https://github.com/TheIronBorn/simd_prngs/blob/master/src/bin/cat_rng.rs)) for printing a PRNG's output to stdout for use with testing utilities like [PractRand](http://pracrand.sourceforge.net/).
+
+WARNING: not all implementations of PRNGs are verified to be correct.
 
 ## Currently implemented PRNGs
 - `Ars5`, `Ars7`: An AES implementation optimized for non-cryptographic use designed by D. E. Shaw Research
 - `IntelLcg`: An LCG designed for SSE2 hardware by Intel
-- `Jsf32`, `Jsf64`: A small chaotic PRNG designed by Bob Jenkins.
-- `Sfc32`, `Sfc64`: A small chaotic PRNG combined with a counter, designed by Chris Doty-Humphrey.
+- `Jsf`: A small chaotic PRNG designed by Bob Jenkins (32, 64-bit two-rotate variants).
+- `Sfc`: A small chaotic PRNG combined with a counter, designed by Chris Doty-Humphrey (16, 32, 64-bit variants).
 - `Xorshift32`, `Xorshift128`: A Xorshift PRNG (32/32-bit and 128/32-bit variants).
 - `Xorshift128Plus`: The Xorshift128+ PRNG.
 - `Xoroshiro128StarStar`: The Xoroshiro128** PRNG.
@@ -24,20 +25,19 @@ Note: not all implementations of PRNGs are verified to be correct.
 - `Pcg32`: A PCG PRNG (XSH 64/32 RR (LCG) variant).
 - `Xsm32`, `Xsm64`: A small random-access PRNG designed by Chris Doty-Humphrey
 - `ChaCha4`: A stream cipher designed by Daniel J. Bernstein. We reduce the rounds to 4 for a faster non-cryptographic version.
+- `AESRand`: A counter-based invertible PRNG using AES-NI instructions by @dragontamer. VERY fast, ~0.12 cycles per byte.
 
-**To be added:**
-- [`AESRand`](https://github.com/dragontamer/AESRand): A counter-based invertible PRNG using AES-NI instructions by @dragontamer. VERY fast, \~0.12 cycles per byte.
-
-Most of the PRNGs are parallelized scalar PRNGs. For most of those, variants with all vector lanes available with [`stdsimd`](https://github.com/rust-lang-nursery/stdsimd) are provided.
+Most of the PRNGs are parallelized scalar PRNGs. For most of those, variants with all vector lanes available with [`packed_simd`](https://github.com/rust-lang-nursery/packed_simd) are provided.
 
 
 ## Currently implemented stream features
 - `Xoroshiro`: equally-spaced blocks via Xoroshiro's jumping features, `blocks_from_rng`
 - `Xoshiro`: equally-spaced blocks via Xoshiro's jumping features, `blocks_from_rng`
 - `Pcg`: random LCG increments
-- `Xsm`: equally-spaced blocks via XSM's `seek_forward`, `blocks_from_rng`
+- ~~`Xsm`: equally-spaced blocks via XSM's `seek_forward`, `blocks_from_rng`~~
 
-Otherwise, parallel PRNGs are given a random seed for each stream with `SeedableRng`. The probabilities of stream correlation for such a method are listed in the source code for each PRNG.
+Otherwise, parallel PRNGs are given a random seed for each stream with `SeedableRng`. The probabilities of stream correlation for such a method are listed in the source code for each PRNG:
+[`stream_length * streams^2 / period`](https://www.iro.umontreal.ca/~lecuyer/myftp/papers/parallel-rng-imacs.pdf#page=15).
 
 ## Possible future work
 - Other counter-based PRNGs inspired by [Random123](http://www.deshawresearch.com/resources_random123.html). They offer Threefry and Philox but both are too slow to be worthwhile. A faster vectorizable pseudo-random permutation/bijection might be viable (see below). AVX-512 offers instructions which would allow 8 64-bit widening multiplications at once which is roughly equivalent to 8 rounds of Philox2×64.
@@ -48,7 +48,7 @@ Otherwise, parallel PRNGs are given a random seed for each stream with `Seedable
 
 Sorted by throughput. The full benchmarks are available in the `benches` directory.
 
-NOTE: even with flags like `target-feature=mmx` the benchmarks will still likely differ on other hardware. Latencies and throughputs may still be the same even with the feature flag.
+NOTE: even with flags like `target-feature=mmx` the benchmarks will still likely differ on other hardware. Feature flags do not change the performance capabilities of instructions on the same hardware.
 
 `RUSTFLAGS='-C target-feature=mmx -C codegen-units=1 -C lto=thin' cargo bench` (the oldest SIMD instruction set):
 ```rust

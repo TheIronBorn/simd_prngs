@@ -5,9 +5,11 @@ mod sfc;
 pub use self::sfc::*;
 
 // too many items to glob use
+#[cfg(feature = "candidate_rngs")]
 pub mod sfc_alt;
 
 // too many items to glob use
+#[cfg(feature = "candidate_rngs")]
 pub mod vf;
 
 mod jsf;
@@ -48,3 +50,6 @@ pub use self::intel_lcg::*;
 
 mod chacha;
 pub use self::chacha::*;
+
+mod aes_rand;
+pub use self::aes_rand::*;

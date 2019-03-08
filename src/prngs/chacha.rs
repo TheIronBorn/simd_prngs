@@ -2,16 +2,19 @@
 //!
 //! https://cr.yp.to/chacha.html
 
-use rand_core::le;
 use rng_impl::*;
+
+const CHACHA_SEED: u32x4 = u32x4::new(0x61707865, 0x3320646E, 0x79622D32, 0x6B206574);
 
 /// 4 rounds of ChaCha
 ///
 /// Not cryptographically strong but still has good statistical quality:
 /// <http://pracrand.sourceforge.net/Tests_results.txt>
 ///
-/// A single stream (multiple streams in a single vector are viable with `u32x8`
-/// addition: [*Vectorization of ChaCha Stream Cipher*](https://eprint.iacr.org/2013/759.pdf)).
+/// A single stream.
+///
+/// Multiple streams in a single vector is viable with AVX2:
+/// [*Vectorization of ChaCha Stream Cipher*](https://eprint.iacr.org/2013/759.pdf)).
 ///
 /// - Memory: 64 bytes
 /// - Speed: around half of [`Ars5`](struct.Ars5.html)
@@ -22,21 +25,25 @@ pub struct ChaCha4 {
     d: u32x4,
 }
 
-impl ChaCha4 {
+impl_rngcore! { ChaCha4 }
+
+impl SimdRng for ChaCha4 {
+    type Result = u32x16;
+
     #[inline(always)]
-    pub fn generate(&mut self) -> u32x16 {
+    fn generate(&mut self) -> u32x16 {
         let mut a = self.a;
         let mut b = self.b;
         let mut c = self.c;
         let mut d = self.d;
 
-        #[cfg_attr(rustfmt, rustfmt_skip)]
+        #[rustfmt::skip]
         macro_rules! round {
             () => {{
-                a += b; d ^= a; d = rotate_left!(d, 16, u32x4);
-                c += d; b ^= c; b = rotate_left!(b, 12, u32x4);
-                a += b; d ^= a; d = rotate_left!(d, 8, u32x4);
-                c += d; b ^= c; b = rotate_left!(b, 7, u32x4);
+                a += b; d ^= a; d = d.rotate_left_opt(16);
+                c += d; b ^= c; b = b.rotate_left_opt(12);
+                a += b; d ^= a; d = d.rotate_left_opt(8);
+                c += d; b ^= c; b = b.rotate_left_opt(7);
             }};
         }
 
@@ -57,12 +64,15 @@ impl ChaCha4 {
         d += self.d;
 
         // update 64-bit counter
-        self.d = u32x4::from_bits(u64x2::from_bits(self.d) + u64x2::new(1, 0));
+        self.d = u32x4::from_bits(u64x2::from_bits(self.d) + 1);
 
         let ab: u32x8 = shuffle!(a, b, [0, 1, 2, 3, 4, 5, 6, 7]);
         let cd: u32x8 = shuffle!(c, d, [0, 1, 2, 3, 4, 5, 6, 7]);
-        #[cfg_attr(rustfmt, rustfmt_skip)]
-        shuffle!(ab, cd, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15])
+        shuffle!(
+            ab,
+            cd,
+            [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+        )
     }
 }
 
@@ -70,13 +80,11 @@ impl SeedableRng for ChaCha4 {
     type Seed = [u8; 32];
 
     fn from_seed(seed: Self::Seed) -> Self {
-        let mut seed_le = [0u32; 8];
-        le::read_u32_into(&seed, &mut seed_le);
         Self {
-            a: u32x4::new(0x61707865, 0x3320646E, 0x79622D32, 0x6B206574), // constants
-            b: u32x4::new(seed_le[0], seed_le[1], seed_le[2], seed_le[3]), // seed
-            c: u32x4::new(seed_le[4], seed_le[5], seed_le[6], seed_le[7]), // seed
-            d: u32x4::new(0, 0, 0, 0),                                     // counter
+            a: CHACHA_SEED,                                                // constants
+            b: u32x4::from_bits(u8x16::from_slice_unaligned(&seed[..16])), // seed
+            c: u32x4::from_bits(u8x16::from_slice_unaligned(&seed[16..])), // seed
+            d: u32x4::splat(0),                                            // counter
         }
     }
 }
@@ -93,33 +101,39 @@ impl SeedableRng for ChaCha4 {
 /// Not cryptographically strong but still has good statistical quality:
 /// <http://pracrand.sourceforge.net/Tests_results.txt>
 ///
-/// A single stream (multiple streams in a single vector are viable with `u32x8`
-/// addition: [*Vectorization of ChaCha Stream Cipher*](https://eprint.iacr.org/2013/759.pdf)).
+/// A single stream.
+///
+/// Multiple streams in a single vector is viable with AVX2:
+/// [*Vectorization of ChaCha Stream Cipher*](https://eprint.iacr.org/2013/759.pdf)).
 ///
 /// - Memory: 64 bytes
 /// - Speed: around 1.3 times [`ChaCha4`](struct.ChaCha4.html)
-pub struct ChaChaA4 {
+pub struct ChaChaAlt4 {
     a: u32x4,
     b: u32x4,
     c: u32x4,
     d: u32x4,
 }
 
-impl ChaChaA4 {
+impl_rngcore! { ChaChaAlt4 }
+
+impl SimdRng for ChaChaAlt4 {
+    type Result = u32x16;
+
     #[inline(always)]
-    pub fn generate(&mut self) -> u32x16 {
+    fn generate(&mut self) -> u32x16 {
         let mut a = self.a;
         let mut b = self.b;
         let mut c = self.c;
         let mut d = self.d;
 
-        #[cfg_attr(rustfmt, rustfmt_skip)]
+        #[rustfmt::skip]
         macro_rules! round {
             () => {{
-                a += b; d ^= a; d = rotate_left!(d, 16, u32x4);
-                c += d; b ^= c; b = rotate_left!(b, 16, u32x4); // canonical: 12
-                a += b; d ^= a; d = rotate_left!(d, 8, u32x4);
-                c += d; b ^= c; b = rotate_left!(b, 8, u32x4); // canonical: 7
+                a += b; d ^= a; d = d.rotate_left_opt(16);
+                c += d; b ^= c; b = b.rotate_left_opt(16); // canonical: 12
+                a += b; d ^= a; d = d.rotate_left_opt(8);
+                c += d; b ^= c; b = b.rotate_left_opt(8); // canonical: 7
             }};
         }
 
@@ -140,26 +154,28 @@ impl ChaChaA4 {
         d += self.d;
 
         // update 64-bit counter
-        self.d = u32x4::from_bits(u64x2::from_bits(self.d) + u64x2::new(1, 0));
+        self.d = u32x4::from_bits(u64x2::from_bits(self.d) + 1);
 
+        // panic!();
         let ab: u32x8 = shuffle!(a, b, [0, 1, 2, 3, 4, 5, 6, 7]);
         let cd: u32x8 = shuffle!(c, d, [0, 1, 2, 3, 4, 5, 6, 7]);
-        #[cfg_attr(rustfmt, rustfmt_skip)]
-        shuffle!(ab, cd, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15])
+        shuffle!(
+            ab,
+            cd,
+            [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+        )
     }
 }
 
-impl SeedableRng for ChaChaA4 {
+impl SeedableRng for ChaChaAlt4 {
     type Seed = [u8; 32];
 
     fn from_seed(seed: Self::Seed) -> Self {
-        let mut seed_le = [0u32; 8];
-        le::read_u32_into(&seed, &mut seed_le);
         Self {
-            a: u32x4::new(0x61707865, 0x3320646E, 0x79622D32, 0x6B206574), // constants
-            b: u32x4::new(seed_le[0], seed_le[1], seed_le[2], seed_le[3]), // seed
-            c: u32x4::new(seed_le[4], seed_le[5], seed_le[6], seed_le[7]), // seed
-            d: u32x4::new(0, 0, 0, 0),                                     // counter
+            a: CHACHA_SEED,                                                // constants
+            b: u32x4::from_bits(u8x16::from_slice_unaligned(&seed[..16])), // seed
+            c: u32x4::from_bits(u8x16::from_slice_unaligned(&seed[16..])), // seed
+            d: u32x4::splat(0),                                            // counter
         }
     }
 }

@@ -15,9 +15,13 @@ pub struct Mwc8 {
     idx: u8,
 }
 
-impl Mwc8 {
+impl_rngcore! { Mwc8 }
+
+impl SimdRng for Mwc8 {
+    type Result = u64x2;
+
     #[inline(always)]
-    pub fn generate(&mut self) -> u64x2 {
+    fn generate(&mut self) -> u64x2 {
         // Factors for multiply-with-carry
         const FACTORS: [u64x2; 4] = [
             u64x2::new(4294963023, 3947008974),
@@ -51,14 +55,13 @@ impl Mwc8 {
 impl SeedableRng for Mwc8 {
     type Seed = [u8; 0];
 
-    #[inline(always)]
     fn from_seed(_seed: Self::Seed) -> Self {
-        unimplemented!()
+        unimplemented!("`SeedableRngs` is unimplemented for MWC PRNGs")
     }
 
-    fn from_rng<R: RngCore>(mut rng: R) -> Result<Self, Error> {
+    fn from_rng<R: Rng>(mut rng: R) -> Result<Self, Error> {
         let mut seed = [u64x2::default(); 4];
-        rng.try_fill(seed.as_byte_slice_mut())?;
+        rng.try_fill_bytes(seed.as_byte_slice_mut())?;
 
         // seeding is very complicated. I'm hoping improper seeding won't
         // affect speed
@@ -77,9 +80,13 @@ pub struct Mwc2 {
     state: u64x2,
 }
 
-impl Mwc2 {
+impl_rngcore! { Mwc2 }
+
+impl SimdRng for Mwc2 {
+    type Result = u64x2;
+
     #[inline(always)]
-    pub fn generate(&mut self) -> u64x2 {
+    fn generate(&mut self) -> u64x2 {
         // Factors for multiply-with-carry
         const FACTORS: u64x2 = u64x2::new(4294963023, 3947008974);
 
@@ -104,14 +111,13 @@ impl Mwc2 {
 impl SeedableRng for Mwc2 {
     type Seed = [u8; 0];
 
-    #[inline(always)]
     fn from_seed(_seed: Self::Seed) -> Self {
-        unimplemented!()
+        unimplemented!("`SeedableRngs` is unimplemented for MWC PRNGs")
     }
 
-    fn from_rng<R: RngCore>(mut rng: R) -> Result<Self, Error> {
+    fn from_rng<R: Rng>(mut rng: R) -> Result<Self, Error> {
         let mut seed = [u64x2::default(); 1];
-        rng.try_fill(seed.as_byte_slice_mut())?;
+        rng.try_fill_bytes(seed.as_byte_slice_mut())?;
 
         // seeding is very complicated. I'm hoping improper seeding won't
         // affect speed
@@ -128,9 +134,13 @@ pub struct Mwc4 {
     idx: bool,
 }
 
-impl Mwc4 {
+impl_rngcore! { Mwc4 }
+
+impl SimdRng for Mwc4 {
+    type Result = u64x2;
+
     #[inline(always)]
-    pub fn generate(&mut self) -> u64x2 {
+    fn generate(&mut self) -> u64x2 {
         // Factors for multiply-with-carry
         const FACTORS: [u64x2; 2] = [
             u64x2::new(4294963023, 3947008974),
@@ -162,14 +172,13 @@ impl Mwc4 {
 impl SeedableRng for Mwc4 {
     type Seed = [u8; 0];
 
-    #[inline(always)]
     fn from_seed(_seed: Self::Seed) -> Self {
-        unimplemented!()
+        unimplemented!("`SeedableRngs` is unimplemented for MWC PRNGs")
     }
 
-    fn from_rng<R: RngCore>(mut rng: R) -> Result<Self, Error> {
+    fn from_rng<R: Rng>(mut rng: R) -> Result<Self, Error> {
         let mut seed = [u64x2::default(); 2];
-        rng.try_fill(seed.as_byte_slice_mut())?;
+        rng.try_fill_bytes(seed.as_byte_slice_mut())?;
 
         // seeding is very complicated. I'm hoping improper seeding won't
         // affect speed

@@ -12,7 +12,7 @@
 
 use rng_impl::*;
 
-#[cfg_attr(rustfmt, rustfmt_skip)]
+#[rustfmt::skip]
 macro_rules! sfc_alt_a {
     (
         $rng_name:ident,
@@ -36,7 +36,7 @@ macro_rules! sfc_alt_a {
                 //a = b ^ (b >> $sh2);
                 //a = b + (b << $sh3);
                 self.a = self.b + self.counter2;
-                self.b = rotate_left!(self.b, $sh1, $vector) + tmp;
+                self.b = self.b.rotate_left_opt($sh1) + tmp;
                 self.a
             }
         }
@@ -61,7 +61,7 @@ macro_rules! sfc_alt_b {
                 let tmp = self.a + self.b + self.counter;
                 self.counter += 1;
                 self.a = self.b ^ (self.b >> $sh2);
-                self.b = rotate_left!(self.b, $sh1, $vector) + tmp;
+                self.b = self.b.rotate_left_opt($sh1) + tmp;
                 tmp
             }
         }
@@ -87,7 +87,7 @@ macro_rules! sfc_alt_c {
                 self.counter += 1;
                 self.a = self.b ^ (self.b >> $sh2); //128 GB?
                 self.b = self.c + (self.c << $sh3); //1 TB
-                self.c = old + rotate_left!(self.c, $sh1, $vector); //important!
+                self.c = old + self.c.rotate_left_opt($sh1); //important!
                 old
             }
         }
@@ -113,7 +113,7 @@ macro_rules! sfc_alt_d {
                 self.a = self.b + self.c + self.counter;
                 self.counter += 1;
                 self.b = self.c ^ (self.c >> $sh2);
-                self.c = rotate_left!(self.c, $sh1, $vector) + old;
+                self.c = self.c.rotate_left_opt($sh1) + old;
                 old
             }
         }
@@ -137,9 +137,9 @@ macro_rules! sfc_alt_e {
                 //too slow, 16 bit version ??? (4 TB w/o counter)
                 let old = self.a + self.b + self.counter;
                 self.counter += 1;
-                self.a = old ^ rotate_left!(self.a, $sh2, $vector);
+                self.a = old ^ self.a.rotate_left_opt($sh2);
                 self.b = self.c + (self.c << $sh3);
-                self.c = old + rotate_left!(self.c, $sh1, $vector);
+                self.c = old + self.c.rotate_left_opt($sh1);
                 old
             }
         }
@@ -165,14 +165,14 @@ macro_rules! sfc_alt_f {
                 self.a += self.b ^ self.c;
                 self.b = self.c ^ (self.c >> $sh2) ^ self.counter;
                 self.counter += 1;
-                self.c = old + rotate_left!(self.c, $sh1, $vector);
+                self.c = old + self.c.rotate_left_opt($sh1);
                 old
             }
         }
     };
 }
 
-#[cfg_attr(rustfmt, rustfmt_skip)]
+#[rustfmt::skip]
 macro_rules! sfc_alt_g {
     (
         $rng_name:ident,
@@ -192,14 +192,14 @@ macro_rules! sfc_alt_g {
                 self.a = self.b + self.counter;
                 self.counter += 1;
                 self.b = self.c ^ (self.c >> $sh2);
-                self.c = old + rotate_left!(self.c, $sh1, $vector);
+                self.c = old + self.c.rotate_left_opt($sh1);
                 old
             }
         }
     };
 }
 
-#[cfg_attr(rustfmt, rustfmt_skip)]
+#[rustfmt::skip]
 macro_rules! sfc_alt_h {
     (
         $rng_name:ident,
@@ -219,7 +219,7 @@ macro_rules! sfc_alt_h {
                 self.counter += 1;
                 self.a = self.b + (self.b << $sh3);
                 self.b = self.c ^ (self.c >> $sh2);
-                self.c = old + rotate_left!(self.c, $sh1, $vector);
+                self.c = old + self.c.rotate_left_opt($sh1);
                 old
             }
         }
@@ -243,9 +243,9 @@ macro_rules! sfc_alt_i {
                 //???
                 let old = self.a + self.counter;
                 self.counter += 1;
-                self.a = rotate_left!(self.a, 3, $vector) ^ (self.a + self.b);
-                self.b = rotate_left!(self.b, 7, $vector) ^ (self.b + self.c);
-                self.c = rotate_left!(self.c, 11, $vector) ^ (self.c + old);
+                self.a = self.a.rotate_left_opt(3) ^ (self.a + self.b);
+                self.b = self.b.rotate_left_opt(7) ^ (self.b + self.c);
+                self.c = self.c.rotate_left_opt(11) ^ (self.c + old);
                 old ^ self.b
             }
         }
@@ -269,16 +269,16 @@ macro_rules! sfc_alt_j {
                 // Some rotates here are larger than 8, which means this won't
                 // work for 8-bit Sfc
 
-                self.a += rotate_left!(self.a, 7, $vector);
-                self.b = rotate_left!(self.b, 13, $vector) + self.b + (self.b << 3);
-                self.c = (self.c + (self.c << 7)) ^ rotate_left!(self.c, 11, $vector);
+                self.a += self.a.rotate_left_opt(7);
+                self.b = self.b.rotate_left_opt(13) + self.b + (self.b << 3);
+                self.c = (self.c + (self.c << 7)) ^ self.c.rotate_left_opt(11);
                 self.a ^ self.b ^ self.c
             }
         }
     };
 }
 
-#[cfg_attr(rustfmt, rustfmt_skip)]
+#[rustfmt::skip]
 macro_rules! sfc_alt_k {
     (
         $rng_name:ident,
@@ -299,7 +299,7 @@ macro_rules! sfc_alt_k {
                 self.a += self.b; self.b -= self.c;
                 self.c += self.a; self.a ^= self.counter;
                 self.counter += 1;
-                self.c = rotate_left!(self.c, $e_sh, $vector);
+                self.c = self.c.rotate_left_opt($e_sh);
 
                 // This variant seems to be missing a line like the `l` variant:
                 // `self.b += self.b << $e_sh2;`
@@ -310,7 +310,7 @@ macro_rules! sfc_alt_k {
     };
 }
 
-#[cfg_attr(rustfmt, rustfmt_skip)]
+#[rustfmt::skip]
 macro_rules! sfc_alt_l {
     ($rng_name:ident, $vector:ident, constants: $sh1:expr, $sh2:expr, $sh3:expr, e1: $e_sh:expr, e2: $e_sh1:expr, $e_sh2:expr) => {
         impl $rng_name {
@@ -323,7 +323,7 @@ macro_rules! sfc_alt_l {
                 // with 64-bit, `$e_sh1` is 48 which is divisible by 8. We could
                 // then implement this rotate with a vector shuffle (might be
                 // faster on older hardware)
-                self.c = rotate_left!(self.c, $e_sh1, $vector); //cb  with count: ?, 14, 9, ?  ; w/o count: 16, 8, 9, ?
+                self.c = self.c.rotate_left_opt($e_sh1); //cb  with count: ?, 14, 9, ?  ; w/o count: 16, 8, 9, ?
                 self.b += self.b << $e_sh2; //ba
                 self.a
             }
@@ -355,7 +355,7 @@ macro_rules! make_sfc {
 
             fn from_rng<R: RngCore>(mut rng: R) -> Result<Self, Error> {
                 let mut seed = [$vector::default(); 3];
-                rng.try_fill(seed.as_byte_slice_mut())?;
+                rng.try_fill_bytes(seed.as_byte_slice_mut())?;
 
                 Ok(Self {
                     a: seed[0],

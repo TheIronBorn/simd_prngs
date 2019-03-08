@@ -1,4 +1,4 @@
-//! lfsr113/258 from http://www-labs.iro.umontreal.ca/~simul/
+//! lfsr113/258 from <https://www-labs.iro.umontreal.ca/~simul>
 //!
 //! They allow jumping so might be good for avoiding correlations
 
@@ -14,9 +14,13 @@ macro_rules! make_lfsr113 {
             z4: $vector,
         }
 
-        impl $rng_name {
+        impl_rngcore! { $rng_name }
+
+        impl SimdRng for $rng_name {
+            type Result = $vector;
+
             #[inline(always)]
-            pub fn generate(&mut self) -> $vector {
+            fn generate(&mut self) -> $vector {
                 let mut b;
                 b = ((self.z1 << 6) ^ self.z1) >> 13;
                 self.z1 = ((self.z1 & 4294967294) << 18) ^ b;
@@ -33,27 +37,26 @@ macro_rules! make_lfsr113 {
         impl SeedableRng for $rng_name {
             type Seed = [u8; 0];
 
-            #[inline(always)]
             fn from_seed(_seed: Self::Seed) -> Self {
-                unimplemented!()
+                unimplemented!("`SeedableRng::from_seed` is unimplemented for some PRNG families")
             }
 
-            fn from_rng<R: RngCore>(mut rng: R) -> Result<Self, Error> {
+            fn from_rng<R: Rng>(mut rng: R) -> Result<Self, Error> {
                 let mut seed = [$vector::default(); 4];
-                rng.try_fill(seed.as_byte_slice_mut())?;
+                rng.try_fill_bytes(seed.as_byte_slice_mut())?;
 
                 // could perhaps use the seeding of ISPC
                 while seed[0].le($vector::splat(1)).any() {
-                    rng.try_fill(seed[0..=0].as_byte_slice_mut())?;
+                    rng.try_fill_bytes(seed[0..=0].as_byte_slice_mut())?;
                 }
                 while seed[1].le($vector::splat(7)).any() {
-                    rng.try_fill(seed[1..=1].as_byte_slice_mut())?;
+                    rng.try_fill_bytes(seed[1..=1].as_byte_slice_mut())?;
                 }
                 while seed[2].le($vector::splat(15)).any() {
-                    rng.try_fill(seed[2..=2].as_byte_slice_mut())?;
+                    rng.try_fill_bytes(seed[2..=2].as_byte_slice_mut())?;
                 }
                 while seed[3].le($vector::splat(127)).any() {
-                    rng.try_fill(seed[3..=3].as_byte_slice_mut())?;
+                    rng.try_fill_bytes(seed[3..=3].as_byte_slice_mut())?;
                 }
 
                 Ok(Self {
@@ -70,15 +73,16 @@ macro_rules! make_lfsr113 {
 // (where `l` is stream length)
 // (multiple parameters could be used, though slow on older hardware)
 // (jumping is possible)
-// Listing probability of overlap somewhere:               Probability
-make_lfsr113! { Lfsr113x2, u32x2 } // 2^2 * l / 2^113 ≈    l * 2^-111
-make_lfsr113! { Lfsr113x4, u32x4 } // 4^2 * l / 2^113 ≈    l * 2^-109
-make_lfsr113! { Lfsr113x8, u32x8 } // 8^2 * l / 2^113 ≈    l * 2^-107
-make_lfsr113! { Lfsr113x16, u32x16 } // 16^2 * l / 2^113 ≈ l * 2^-105
+#[rustfmt::skip]
+// Listing probability of overlap somewhere:                 Probability
+make_lfsr113! { Lfsr113x2,  u32x2  } // ≈ 2^2  * l / 2^113 ≈ l * 2^-111
+make_lfsr113! { Lfsr113x4,  u32x4  } // ≈ 4^2  * l / 2^113 ≈ l * 2^-109
+make_lfsr113! { Lfsr113x8,  u32x8  } // ≈ 8^2  * l / 2^113 ≈ l * 2^-107
+make_lfsr113! { Lfsr113x16, u32x16 } // ≈ 16^2 * l / 2^113 ≈ l * 2^-105
 
 macro_rules! make_lfsr258 {
     ($rng_name:ident, $vector:ident) => {
-        /// Period: 258
+        /// Period: 2^258
         pub struct $rng_name {
             y1: $vector,
             y2: $vector,
@@ -87,9 +91,13 @@ macro_rules! make_lfsr258 {
             y5: $vector,
         }
 
-        impl $rng_name {
+        impl_rngcore! { $rng_name }
+
+        impl SimdRng for $rng_name {
+            type Result = $vector;
+
             #[inline(always)]
-            pub fn generate(&mut self) -> $vector {
+            fn generate(&mut self) -> $vector {
                 let mut b;
 
                 b = ((self.y1 << 1) ^ self.y1) >> 53;
@@ -109,29 +117,28 @@ macro_rules! make_lfsr258 {
         impl SeedableRng for $rng_name {
             type Seed = [u8; 0];
 
-            #[inline(always)]
             fn from_seed(_seed: Self::Seed) -> Self {
-                unimplemented!()
+                unimplemented!("`SeedableRng::from_seed` is unimplemented for some PRNG families")
             }
 
-            fn from_rng<R: RngCore>(mut rng: R) -> Result<Self, Error> {
+            fn from_rng<R: Rng>(mut rng: R) -> Result<Self, Error> {
                 let mut seed = [$vector::default(); 5];
-                rng.try_fill(seed.as_byte_slice_mut())?;
+                rng.try_fill_bytes(seed.as_byte_slice_mut())?;
 
                 while seed[0].le($vector::splat(1)).any() {
-                    rng.try_fill(seed[0..=0].as_byte_slice_mut())?;
+                    rng.try_fill_bytes(seed[0..=0].as_byte_slice_mut())?;
                 }
                 while seed[1].le($vector::splat(511)).any() {
-                    rng.try_fill(seed[1..=1].as_byte_slice_mut())?;
+                    rng.try_fill_bytes(seed[1..=1].as_byte_slice_mut())?;
                 }
                 while seed[2].le($vector::splat(4095)).any() {
-                    rng.try_fill(seed[2..=2].as_byte_slice_mut())?;
+                    rng.try_fill_bytes(seed[2..=2].as_byte_slice_mut())?;
                 }
                 while seed[3].le($vector::splat(131071)).any() {
-                    rng.try_fill(seed[3..=3].as_byte_slice_mut())?;
+                    rng.try_fill_bytes(seed[3..=3].as_byte_slice_mut())?;
                 }
                 while seed[4].le($vector::splat(8388607)).any() {
-                    rng.try_fill(seed[4..=4].as_byte_slice_mut())?;
+                    rng.try_fill_bytes(seed[4..=4].as_byte_slice_mut())?;
                 }
 
                 Ok(Self {
@@ -149,7 +156,7 @@ macro_rules! make_lfsr258 {
 // (where `l` is stream length)
 // (multiple parameters could be used, though slow on older hardware)
 // (jumping is possible)
-// Listing probability of overlap somewhere:            Probability
-make_lfsr258! { Lfsr258x2, u64x2 } // 2^2 * l / 2^258 ≈ l * 2^-256
-make_lfsr258! { Lfsr258x4, u64x4 } // 4^2 * l / 2^258 ≈ l * 2^-254
-make_lfsr258! { Lfsr258x8, u64x8 } // 8^2 * l / 2^258 ≈ l * 2^-252
+// Listing probability of overlap somewhere:              Probability
+make_lfsr258! { Lfsr258x2, u64x2 } // ≈ 2^2 * l / 2^258 ≈ l * 2^-256
+make_lfsr258! { Lfsr258x4, u64x4 } // ≈ 4^2 * l / 2^258 ≈ l * 2^-254
+make_lfsr258! { Lfsr258x8, u64x8 } // ≈ 8^2 * l / 2^258 ≈ l * 2^-252

@@ -4,13 +4,16 @@ version = "0.1.0"
 authors = ["TheIronBorn <>"]
 
 [features]
-default = ["packed_simd"]
-
-[dependencies]
-rand = "0.5"
-rand_core = "0.2"
+candidate_rngs = []
+rotate_opts = []
 
 [dependencies.packed_simd]
-version = "0.2"
-optional = true
-features = ["into_bits", "coresimd"]
+# git = "https://github.com/rust-lang-nursery/packed_simd"
+version = "0.3"
+default-features = false
+features = ["into_bits"]
+
+[dependencies.rand]
+version = "0.6"
+default-features = false
+features = ["nightly", "simd_support", "std"]
