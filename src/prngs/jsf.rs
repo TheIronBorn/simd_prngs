@@ -22,8 +22,14 @@ macro_rules! make_jsf_32 {
                 // Other sets that achieve 8.8 bits of avalanche include (9,16), (9,24),
                 // (10,16), (10,24), (11,16), (11,24), (25,8), (25,16), (26,8), (26,16),
                 // (26,17), and (27,16).
-                let e = self.a - self.b.rotate_left_opt(9);
-                self.a = self.b ^ self.c.rotate_left_opt(16);
+                let (i, j) = if cfg!(feature = "rotate_opts") {
+                    (9, 16)
+                } else {
+                    (27, 17)
+                };
+
+                let e = self.a - self.b.rotate_left_opt(i);
+                self.a = self.b ^ self.c.rotate_left_opt(j);
                 self.b = self.c + self.d;
                 self.c = self.d + e;
                 self.d = e + self.a;

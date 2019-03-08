@@ -16,6 +16,7 @@ macro_rules! impl_rotate_opt {
         impl RotateOpt for $ty {
             #[inline]
             fn rotate_left_opt(self, i: usize) -> Self {
+                // TODO: look into AVX-512 `vpro[r/l]` conditional compilation
                 if cfg!(all(target_feature = "ssse3", feature = "rotate_opts")) {
                     #[allow(clippy::single_match)] // false positive due to macro
                     match i {
