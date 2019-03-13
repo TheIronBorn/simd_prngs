@@ -1,14 +1,6 @@
-// Copyright 2018 The Rust Project Developers. See the COPYRIGHT
-// file at the top-level directory of this distribution and at
-// https://rust-lang.org/COPYRIGHT.
-//
-// Licensed under the Apache License, Version 2.0 <LICENSE-APACHE or
-// https://www.apache.org/licenses/LICENSE-2.0> or the MIT license
-// <LICENSE-MIT or https://opensource.org/licenses/MIT>, at your
-// option. This file may not be copied, modified, or distributed
-// except according to those terms.
-
 //! VeryFast generators.
+//!
+//! PractRand 0.94 candidates are not included
 
 use std::mem;
 
@@ -16,9 +8,11 @@ use rng_impl::*;
 
 macro_rules! vf_a {
     ($rng_name:ident, $vector:ident, $rot:expr, $shr:expr, $shl:expr) => {
-        impl $rng_name {
+        impl SimdRng for $rng_name {
+            type Result = $vector;
+
             #[inline(always)]
-            pub fn generate(&mut self) -> $vector {
+            fn generate(&mut self) -> $vector {
                 // good speed, 16 bit version fails @ 32 GB, 32 bit version passed 8 TB
                 let old = self.a + self.b;
                 self.a = self.b ^ (self.b >> $shr);
@@ -32,9 +26,11 @@ macro_rules! vf_a {
 
 macro_rules! vf_b {
     ($rng_name:ident, $vector:ident, $rot:expr, $shr:expr, $shl:expr) => {
-        impl $rng_name {
+        impl SimdRng for $rng_name {
+            type Result = $vector;
+
             #[inline(always)]
-            pub fn generate(&mut self) -> $vector {
+            fn generate(&mut self) -> $vector {
                 // best quality: 16 bit fails @ 1 TB, but not as fast ;; switching `a += b ^
                 // c;` for `a ^= b + c;` increases that to 2 TB
                 let old = self.a + (self.a << $shl);
@@ -49,9 +45,11 @@ macro_rules! vf_b {
 
 macro_rules! vf_c {
     ($rng_name:ident, $vector:ident, $rot:expr, $shr:expr, $shl:expr) => {
-        impl $rng_name {
+        impl SimdRng for $rng_name {
+            type Result = $vector;
+
             #[inline(always)]
-            pub fn generate(&mut self) -> $vector {
+            fn generate(&mut self) -> $vector {
                 // faster, simpler, lower quality - just 4-6 ops, very few dependent
                 // 16 bit: 128 MB, 32 bit: 32 GB
                 let old = self.a + self.b;
@@ -66,9 +64,11 @@ macro_rules! vf_c {
 
 macro_rules! vf_d {
     ($rng_name:ident, $vector:ident, $rot:expr, $shr:expr, $shl:expr) => {
-        impl $rng_name {
+        impl SimdRng for $rng_name {
+            type Result = $vector;
+
             #[inline(always)]
-            pub fn generate(&mut self) -> $vector {
+            fn generate(&mut self) -> $vector {
                 // another alternative
                 // 16 bit: 1 GB, 32 bit: 2 TB
                 let old = self.a + self.b;
@@ -85,9 +85,11 @@ macro_rules! vf_d {
 
 macro_rules! vf_e {
     ($rng_name:ident, $vector:ident, $rot:expr, $shr:expr, $shl:expr) => {
-        impl $rng_name {
+        impl SimdRng for $rng_name {
+            type Result = $vector;
+
             #[inline(always)]
-            pub fn generate(&mut self) -> $vector {
+            fn generate(&mut self) -> $vector {
                 const LANE_BITS: usize = mem::size_of::<$vector>() * 8 / $vector::lanes();
 
                 // uses multiplication, only 2 words, but pretty good aside from that:
@@ -104,9 +106,11 @@ macro_rules! vf_e {
 
 macro_rules! vf_f {
     ($rng_name:ident, $vector:ident, $rot:expr, $shr:expr, $shl:expr) => {
-        impl $rng_name {
+        impl SimdRng for $rng_name {
+            type Result = $vector;
+
             #[inline(always)]
-            pub fn generate(&mut self) -> $vector {
+            fn generate(&mut self) -> $vector {
                 const LANE_BITS: usize = mem::size_of::<$vector>() * 8 / $vector::lanes();
 
                 #[allow(overflowing_literals)]
@@ -122,9 +126,11 @@ macro_rules! vf_f {
 
 macro_rules! vf_g {
     ($rng_name:ident, $vector:ident, $rot:expr, $shr:expr, $shl:expr) => {
-        impl $rng_name {
+        impl SimdRng for $rng_name {
+            type Result = $vector;
+
             #[inline(always)]
-            pub fn generate(&mut self) -> $vector {
+            fn generate(&mut self) -> $vector {
                 const LANE_BITS: usize = mem::size_of::<$vector>() * 8 / $vector::lanes();
 
                 let old = self.a ^ (self.a >> (LANE_BITS as u32 / 2));
@@ -148,6 +154,8 @@ macro_rules! make_vf {
         }
 
         $version!($rng_name, $vector, $rot, $shr, $shl);
+
+        impl_rngcore! { $rng_name }
 
         impl SeedableRng for $rng_name {
             type Seed = [u8; 0];

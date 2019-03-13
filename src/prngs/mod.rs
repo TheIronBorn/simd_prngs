@@ -4,13 +4,19 @@ pub use self::ars::*;
 mod sfc;
 pub use self::sfc::*;
 
-// too many items to glob use
 #[cfg(feature = "candidate_rngs")]
 pub mod sfc_alt;
+// too many items to list in documentation
+#[doc(hidden)]
+#[cfg(feature = "candidate_rngs")]
+pub use sfc_alt::*;
 
-// too many items to glob use
 #[cfg(feature = "candidate_rngs")]
 pub mod vf;
+// too many items to list in documentation
+#[doc(hidden)]
+#[cfg(feature = "candidate_rngs")]
+pub use vf::*;
 
 mod jsf;
 pub use self::jsf::*;

@@ -12,7 +12,7 @@ pub trait RotateOpt {
 }
 
 macro_rules! impl_rotate_opt {
-    ($ty:ty, $u8xN:ident, $scalar:ty, $($rot_dist:expr, $idxs:tt),+) => (
+    ($ty:ty, $u8xN:ident, $scalar:ty, $($rot_dist:expr, $idxs:tt),*) => (
         impl RotateOpt for $ty {
             #[inline]
             fn rotate_left_opt(self, i: usize) -> Self {
@@ -26,7 +26,7 @@ macro_rules! impl_rotate_opt {
                                 let x: $u8xN = shuffle!(bytes, bytes, $idxs);
                                 return Self::from_bits(x);
                             },
-                        )+
+                        )*
                         _ => (),
                     }
                 }
@@ -36,6 +36,13 @@ macro_rules! impl_rotate_opt {
         }
     );
 }
+
+impl_rotate_opt! { u8x2, u8x2, u8, }
+impl_rotate_opt! { u8x4, u8x4, u8, }
+impl_rotate_opt! { u8x8, u8x8, u8, }
+impl_rotate_opt! { u8x16, u8x16, u8, }
+impl_rotate_opt! { u8x32, u8x32, u8, }
+impl_rotate_opt! { u8x64, u8x64, u8, }
 
 impl_rotate_opt! { u16x2, u8x4, u16, 8, [1, 0, 3, 2] }
 impl_rotate_opt! { u16x4, u8x8, u16, 8, [1, 0, 3, 2, 5, 4, 7, 6] }

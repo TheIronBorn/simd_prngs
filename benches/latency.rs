@@ -14,13 +14,14 @@ use packed_simd::*;
 use rand::prelude::*;
 use simd_prngs::*;
 
-// This benchmark emulates rejection sampling, so the number of RNG calls varies. For proper
-// benchmark results, it must be run many times.
+// This benchmark emulates rejection sampling, so the number of RNG calls varies. For meaningful
+// data, it must be run many times.
 const BENCH_N: u64 = 1 << 15;
 
-const BOUND_16: u16 = 0;
-const BOUND_32: u32 = 0xffff;
-const BOUND_64: u64 = 0xffff_ffff_ffff;
+const BOUND_8: u64 = 0;
+const BOUND_16: u64 = 0x00FF;
+const BOUND_32: u64 = 0x00FF_FFFF;
+const BOUND_64: u64 = 0x00FF_FFFF_FFFF_FFFF;
 
 macro_rules! make_latency_bench {
     ($gen:ident, $uty:ident, $fty:ident) => {
@@ -34,6 +35,7 @@ macro_rules! make_latency_bench {
 
                 let mut rng = simd_prngs::$gen::from_rng(thread_rng()).unwrap();
                 let bound = match LANE_WIDTH {
+                    8 => BOUND_8,
                     16 => BOUND_16,
                     32 => BOUND_32,
                     64 => BOUND_64,
@@ -45,8 +47,8 @@ macro_rules! make_latency_bench {
                     for _ in 0..BENCH_N {
                         loop {
                             let rand = rng.gen::<$uty>();
-                            // for any lane-width >= 16-bits, 1/2^16 chance to loop
-                            if rand.extract(0) > bound {
+                            // for any lane-width, 1/256 chance to loop
+                            if rand.extract(0) as u64 > bound {
                                 accum ^= rand;
                                 break;
                             }
@@ -72,7 +74,7 @@ fn small_rng_reject(b: &mut Bencher) {
         for _ in 0..BENCH_N {
             loop {
                 let rand = rng.gen::<u64>();
-                if rand > BOUND_64 {
+                if rand as u64 > BOUND_64 {
                     accum ^= rand;
                     break;
                 }
@@ -90,10 +92,10 @@ fn AesRand_256_latency(b: &mut Bencher) {
 
     b.iter(|| {
         let mut accum = u32x8::splat(0);
-        for _ in 0..BENCH_N / 2 {
+        for _ in 0..BENCH_N {
             loop {
                 let rand = rng.gen::<u32x8>();
-                if rand.extract(0) > BOUND_32 {
+                if rand.extract(0) as u64 > BOUND_32 {
                     accum ^= rand;
                     break;
                 }
@@ -111,15 +113,15 @@ fn AesRand_unroll_128_latency(b: &mut Bencher) {
 
     b.iter(|| {
         let mut accum = u32x4::splat(0);
-        for _ in 0..BENCH_N / 2 {
+        for _ in 0..BENCH_N {
             loop {
                 let rand = rng.gen::<u32x4>();
-                if rand.extract(0) > BOUND_32 {
+                if rand.extract(0) as u64 > BOUND_32 {
                     accum ^= rand;
                     break;
                 }
                 let rand = rng.gen::<u32x4>();
-                if rand.extract(0) > 0xffff {
+                if rand.extract(0) as u64 > BOUND_32 {
                     accum ^= rand;
                     break;
                 }

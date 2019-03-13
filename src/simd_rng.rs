@@ -83,11 +83,12 @@ macro_rules! impl_write_bytes {
     );
 }
 
-impl_write_bytes! { u8x4 => u16x2 }
-impl_write_bytes! { u8x8 => u16x4, u32x2 }
-impl_write_bytes! { u8x16 => u16x8, u32x4, u64x2 }
-impl_write_bytes! { u8x32 => u16x16, u32x8, u64x4 }
-impl_write_bytes! { u8x64 => u16x32, u32x16, u64x8 }
+impl_write_bytes! { u8x2 => u8x2 }
+impl_write_bytes! { u8x4 => u8x4, u16x2 }
+impl_write_bytes! { u8x8 => u8x8, u16x4, u32x2 }
+impl_write_bytes! { u8x16 => u8x16, u16x8, u32x4, u64x2 }
+impl_write_bytes! { u8x32 => u8x32, u16x16, u32x8, u64x4 }
+impl_write_bytes! { u8x64 => u8x64, u16x32, u32x16, u64x8 }
 
 #[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
 impl_write_bytes! { u8x16 => __m128i }

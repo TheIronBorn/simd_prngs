@@ -1,13 +1,3 @@
-// Copyright 2018 The Rust Project Developers. See the COPYRIGHT
-// file at the top-level directory of this distribution and at
-// https://rust-lang.org/COPYRIGHT.
-//
-// Licensed under the Apache License, Version 2.0 <LICENSE-APACHE or
-// https://www.apache.org/licenses/LICENSE-2.0> or the MIT license
-// <LICENSE-MIT or https://opensource.org/licenses/MIT>, at your
-// option. This file may not be copied, modified, or distributed
-// except according to those terms.
-
 //! SFC Alternate generators.
 
 use rng_impl::*;
@@ -24,9 +14,11 @@ macro_rules! sfc_alt_a {
         e2: $e_sh1:expr,
         $e_sh2:expr
     ) => {
-        impl $rng_name {
+        impl SimdRng for $rng_name {
+            type Result = $vector;
+
             #[inline(always)]
-            pub fn generate(&mut self) -> $vector {
+            fn generate(&mut self) -> $vector {
                 //experiment with larger pseudo-counter
                 self.counter += 1;
                 // counter2 += counter + (counter ? 0 : 1);//2-word LCG
@@ -54,9 +46,11 @@ macro_rules! sfc_alt_b {
         e2: $e_sh1:expr,
         $e_sh2:expr
     ) => {
-        impl $rng_name {
+        impl SimdRng for $rng_name {
+            type Result = $vector;
+
             #[inline(always)]
-            pub fn generate(&mut self) -> $vector {
+            fn generate(&mut self) -> $vector {
                 //SFC 3:
                 let tmp = self.a + self.b + self.counter;
                 self.counter += 1;
@@ -79,9 +73,11 @@ macro_rules! sfc_alt_c {
         e2: $e_sh1:expr,
         $e_sh2:expr
     ) => {
-        impl $rng_name {
+        impl SimdRng for $rng_name {
+            type Result = $vector;
+
             #[inline(always)]
-            pub fn generate(&mut self) -> $vector {
+            fn generate(&mut self) -> $vector {
                 //SFC 4, 16 bit version >8 TB (64 GB w/o counter)
                 let old = self.a + self.b + self.counter; //64 GB on counter, 8 TB on b
                 self.counter += 1;
@@ -105,9 +101,11 @@ macro_rules! sfc_alt_d {
         e2: $e_sh1:expr,
         $e_sh2:expr
     ) => {
-        impl $rng_name {
+        impl SimdRng for $rng_name {
+            type Result = $vector;
+
             #[inline(always)]
-            pub fn generate(&mut self) -> $vector {
+            fn generate(&mut self) -> $vector {
                 //okay speed, 16 bit version >2 TB (256 GB w/o counter), 32 bit @ ?
                 let old = self.a + (self.a << $sh3);
                 self.a = self.b + self.c + self.counter;
@@ -131,9 +129,11 @@ macro_rules! sfc_alt_e {
         e2: $e_sh1:expr,
         $e_sh2:expr
     ) => {
-        impl $rng_name {
+        impl SimdRng for $rng_name {
+            type Result = $vector;
+
             #[inline(always)]
-            pub fn generate(&mut self) -> $vector {
+            fn generate(&mut self) -> $vector {
                 //too slow, 16 bit version ??? (4 TB w/o counter)
                 let old = self.a + self.b + self.counter;
                 self.counter += 1;
@@ -157,9 +157,11 @@ macro_rules! sfc_alt_f {
         e2: $e_sh1:expr,
         $e_sh2:expr
     ) => {
-        impl $rng_name {
+        impl SimdRng for $rng_name {
+            type Result = $vector;
+
             #[inline(always)]
-            pub fn generate(&mut self) -> $vector {
+            fn generate(&mut self) -> $vector {
                 //too slow, 16 bit version ??? (2 TB w/o counter)
                 let old = self.a + (self.a << $sh3);
                 self.a += self.b ^ self.c;
@@ -184,9 +186,11 @@ macro_rules! sfc_alt_g {
         e2: $e_sh1:expr,
         $e_sh2:expr
     ) => {
-        impl $rng_name {
+        impl SimdRng for $rng_name {
+            type Result = $vector;
+
             #[inline(always)]
-            pub fn generate(&mut self) -> $vector {
+            fn generate(&mut self) -> $vector {
                 //faster, 16 bit version failed @ 64-128 GB (4 GB w/o counter), 32 bit @ ? (passed 16 TB w/o counter)
                 let old = self.a + self.b;
                 self.a = self.b + self.counter;
@@ -211,9 +215,11 @@ macro_rules! sfc_alt_h {
         e2: $e_sh1:expr,
         $e_sh2:expr
     ) => {
-        impl $rng_name {
+        impl SimdRng for $rng_name {
+            type Result = $vector;
+
             #[inline(always)]
-            pub fn generate(&mut self) -> $vector {
+            fn generate(&mut self) -> $vector {
                 //good speed, 16 bit version failed @ >512 GB (32 GB w/o counter), 32 bit @ ? (? w/o counter)
                 let old = self.a + self.b + self.counter;
                 self.counter += 1;
@@ -237,9 +243,11 @@ macro_rules! sfc_alt_i {
         e2: $e_sh1:expr,
         $e_sh2:expr
     ) => {
-        impl $rng_name {
+        impl SimdRng for $rng_name {
+            type Result = $vector;
+
             #[inline(always)]
-            pub fn generate(&mut self) -> $vector {
+            fn generate(&mut self) -> $vector {
                 //???
                 let old = self.a + self.counter;
                 self.counter += 1;
@@ -263,9 +271,11 @@ macro_rules! sfc_alt_j {
         e2: $e_sh1:expr,
         $e_sh2:expr
     ) => {
-        impl $rng_name {
+        impl SimdRng for $rng_name {
+            type Result = $vector;
+
             #[inline(always)]
-            pub fn generate(&mut self) -> $vector {
+            fn generate(&mut self) -> $vector {
                 // Some rotates here are larger than 8, which means this won't
                 // work for 8-bit Sfc
 
@@ -290,9 +300,11 @@ macro_rules! sfc_alt_k {
         e2: $e_sh1:expr,
         $e_sh2:expr
     ) => {
-        impl $rng_name {
+        impl SimdRng for $rng_name {
+            type Result = $vector;
+
             #[inline(always)]
-            pub fn generate(&mut self) -> $vector {
+            fn generate(&mut self) -> $vector {
                 // My testing puts it at >512GB (64-bit version)
 
                 //VERY good speed, 16 bit version failed @ 256 GB (2 GB w/o counter), 32 bit @ ?
@@ -313,9 +325,11 @@ macro_rules! sfc_alt_k {
 #[rustfmt::skip]
 macro_rules! sfc_alt_l {
     ($rng_name:ident, $vector:ident, constants: $sh1:expr, $sh2:expr, $sh3:expr, e1: $e_sh:expr, e2: $e_sh1:expr, $e_sh2:expr) => {
-        impl $rng_name {
+        impl SimdRng for $rng_name {
+            type Result = $vector;
+
             #[inline(always)]
-            pub fn generate(&mut self) -> $vector {
+            fn generate(&mut self) -> $vector {
                 //VERY good speed, 16 bit version failed @ 16 TB (1 TB w/o counter), 32 bit @ > 4 TB w/o counter
                 self.a += self.b; self.b -= self.c;
                 self.c += self.a; self.a ^= self.counter;
@@ -345,6 +359,8 @@ macro_rules! make_sfc {
         }
 
         $version!($rng_name, $vector, constants: $sh1, $sh2, $sh3, e1: $e_sh, e2: $e_sh1, $e_sh2);
+
+        impl_rngcore! { $rng_name }
 
         impl SeedableRng for $rng_name {
             type Seed = [u8; 0];
